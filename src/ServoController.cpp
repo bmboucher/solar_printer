@@ -11,7 +11,7 @@ class ServoController::Implementation {
 private:
     char address;
 public:
-    ServoController(char address) : address(address) { }
+    Implementation(char address) : address(address) { }
 };
 
 ServoController::ServoController() : ServoController(default_address) {}
