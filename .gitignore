@@ -1,3 +1,8 @@
+# Build folders
+bin/*
+obj/*
+lib/*
+
 # Prerequisites
 *.d
 
