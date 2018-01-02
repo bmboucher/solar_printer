@@ -3,7 +3,7 @@
 #include <sys/ioctl.h>			//Needed for I2C port
 #include <linux/i2c-dev.h>		//Needed for I2C port
 
-#include <PCA9685.hpp>
+#include <ServoController.hpp>
 
 const char default_address = 0x40;
 
