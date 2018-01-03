@@ -11,7 +11,7 @@
 using std::vector;
 
 namespace {
-    const __u8* i2c_filename = "/dev/i2c-1";
+    const unsigned char* i2c_filename = "/dev/i2c-1";
     int file_i2c() {
         static int file_i2c = open(i2c_filename, O_RDWR);
         if (file_i2c < 0) {
@@ -20,9 +20,9 @@ namespace {
         return file_i2c;
     }
 
-    bool acquire_i2c_(__u8 address) {
+    bool acquire_i2c_(unsigned char address) {
         if (file_i2c() < 0) return false;
-        static __u8 prev_address{ 0 };
+        static unsigned char prev_address{ 0 };
         if (prev_address == address) return true;
         bool success = (ioctl(file_i2c(), I2C_SLAVE, address) >= 0);
         if (!success) {
@@ -49,68 +49,68 @@ bool i2cDevice::acquire_i2c() {
     return acquire_i2c_(address);
 }
 
-void i2cDevice::write_quick(__u8 value) {
+void i2cDevice::write_quick(unsigned char value) {
     if (!acquire_i2c()) return;
     WRAP(i2c_smbus_write_quick(file_i2c(), value));
 }
 
-__u8 i2cDevice::read_byte() {
+unsigned char i2cDevice::read_byte() {
     if (!acquire_i2c()) return 0;
     WRAP(i2c_smbus_read_byte(file_i2c()));
-    return static_cast<__u8>(ret);
+    return static_cast<unsigned char>(ret);
 }
 
-void i2cDevice::write_byte(__u8 value) {
+void i2cDevice::write_byte(unsigned char value) {
     if (!acquire_i2c()) return;
     WRAP(i2c_smbus_write_byte(file_i2c(), value));
 }
 
-__u8 i2cDevice::read_byte_data(__u8 reg) {
+unsigned char i2cDevice::read_byte_data(unsigned char reg) {
     if (!acquire_i2c()) return 0;
     WRAP(i2c_smbus_read_byte_data(file_i2c(), reg));
-    return static_cast<__u8>(ret);
+    return static_cast<unsigned char>(ret);
 }
 
-bool i2cDevice::read_bit(__u8 reg, __u8 bitmask) {
+bool i2cDevice::read_bit(unsigned char reg, unsigned char bitmask) {
     return (read_byte_data(reg) & bitmask) != 0;
 }
 
-void i2cDevice::write_byte_data(__u8 reg, __u8 value) {
+void i2cDevice::write_byte_data(unsigned char reg, unsigned char value) {
     if (!acquire_i2c()) return;
     WRAP(i2c_smbus_write_byte_data(file_i2c(), reg, value));
 }
 
-void i2cDevice::write_bit(__u8 reg, __u8 bitmask, bool value) {
+void i2cDevice::write_bit(unsigned char reg, unsigned char bitmask, bool value) {
     if (!acquire_i2c()) return;
-    __u8 curr_value = read_byte_data(reg);
-    __u8 new_value = value ? (curr_value | bitmask) : (curr_value & ~bitmask);
+    unsigned char curr_value = read_byte_data(reg);
+    unsigned char new_value = value ? (curr_value | bitmask) : (curr_value & ~bitmask);
     write_byte_data(reg, new_value);
 }
 
-uint16_t i2cDevice::read_word_data(__u8 reg) {
+uint16_t i2cDevice::read_word_data(unsigned char reg) {
     if (!acquire_i2c()) return 0;
     WRAP(i2c_smbus_read_word_data(file_i2c(), reg));
     return static_cast<uint16_t>(ret);
 }
 
-void i2cDevice::write_word_data(__u8 reg, uint16_t value) {
+void i2cDevice::write_word_data(unsigned char reg, uint16_t value) {
     if (!acquire_i2c()) return;
     WRAP(i2c_smbus_write_word_data(file_i2c(), reg, value));
 }
 
-uint16_t i2cDevice::process_call(__u8 reg, uint16_t value) {
+uint16_t i2cDevice::process_call(unsigned char reg, uint16_t value) {
     if (!acquire_i2c()) return 0;
     WRAP(i2c_smbus_process_call(file_i2c(), reg, value));
     return static_cast<uint16_t>(ret);
 }
 
-__u8 i2cDevice::read_block_data(__u8 reg, __u8* buffer) {
+unsigned char i2cDevice::read_block_data(unsigned char reg, unsigned char* buffer) {
     if (!acquire_i2c()) return 0;
     WRAP(i2c_smbus_read_block_data(file_i2c(), reg, buffer));
-    return static_cast<__u8>(ret);
+    return static_cast<unsigned char>(ret);
 }
 
-void i2cDevice::write_block_data(__u8 reg, __u8 length, const __u8* buffer) {
+void i2cDevice::write_block_data(unsigned char reg, unsigned char length, const unsigned char* buffer) {
     if (!acquire_i2c()) return;
     WRAP(i2c_smbus_write_block_data(file_i2c(), reg, length, buffer));
 }
