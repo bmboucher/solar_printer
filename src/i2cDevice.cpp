@@ -7,6 +7,7 @@
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
+#include <bitset>
 
 using std::vector;
 
@@ -74,10 +75,8 @@ void i2cDevice::write_byte(unsigned char value) {
 unsigned char i2cDevice::read_byte_data(unsigned char reg) {
     if (!acquire_i2c()) return 0;
     WRAP(i2c_smbus_read_byte_data(file_i2c(), reg));
-    std::cout << "Read value "
-        << std::hex << ret
-        << " from register "
-        << (int)reg << std::dec << std::endl;
+    std::cout << "Read value " << std::bitset<8>(ret)
+        << " from register " << (int)reg << std::endl;
     return static_cast<unsigned char>(ret);
 }
 
@@ -88,10 +87,8 @@ bool i2cDevice::read_bit(unsigned char reg, unsigned char bitmask) {
 void i2cDevice::write_byte_data(unsigned char reg, unsigned char value) {
     if (!acquire_i2c()) return;
     WRAP(i2c_smbus_write_byte_data(file_i2c(), reg, value));
-    std::cout << "Wrote value "
-        << std::hex << (int)value
-        << " to register "
-        << (int)reg << std::dec << std::endl;
+    std::cout << "Wrote value " << std::bitset<8>(value)
+        << " to register " << (int)reg << std::endl;
     read_byte_data(reg);
 }
 
