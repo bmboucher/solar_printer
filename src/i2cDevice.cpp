@@ -77,8 +77,8 @@ unsigned char i2cDevice::read_byte_data(unsigned char reg) {
     std::cout << "Read value "
         << std::hex << ret
         << " from register "
-        << reg << std::dec << std::endl;
-    return static_cast<unsigned char>(ret);
+        << (int)reg << std::dec << std::endl;
+    return static_cast<unsigned char>(ret)
 }
 
 bool i2cDevice::read_bit(unsigned char reg, unsigned char bitmask) {
@@ -89,9 +89,9 @@ void i2cDevice::write_byte_data(unsigned char reg, unsigned char value) {
     if (!acquire_i2c()) return;
     WRAP(i2c_smbus_write_byte_data(file_i2c(), reg, value));
     std::cout << "Wrote value "
-        << std::hex << value
+        << std::hex << (int)value
         << " to register "
-        << reg << std::dec << std::endl;
+        << (int)reg << std::dec << std::endl;
     read_byte_data(reg);
 }
 
