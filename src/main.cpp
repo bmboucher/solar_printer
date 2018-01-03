@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 int main(int argc, char* argv[]) {   
-    i2cSoftwareReset();
+    i2c::softwareReset();
 
     Hardware hw;
     double pan = -90;
