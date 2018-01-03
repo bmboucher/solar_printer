@@ -78,7 +78,7 @@ unsigned char i2cDevice::read_byte_data(unsigned char reg) {
         << std::hex << ret
         << " from register "
         << (int)reg << std::dec << std::endl;
-    return static_cast<unsigned char>(ret)
+    return static_cast<unsigned char>(ret);
 }
 
 bool i2cDevice::read_bit(unsigned char reg, unsigned char bitmask) {
