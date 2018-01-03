@@ -11,7 +11,7 @@
 using std::vector;
 
 namespace {
-    const unsigned char* i2c_filename = "/dev/i2c-1";
+    const char* i2c_filename = "/dev/i2c-1";
     int file_i2c() {
         static int file_i2c = open(i2c_filename, O_RDWR);
         if (file_i2c < 0) {
