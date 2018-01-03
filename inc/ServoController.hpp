@@ -7,8 +7,8 @@ private:
 
 public:
     ServoController() : PCA9685() { init(); }
-    ServoController(char address) : PCA9685(address) { init(); }
+    ServoController(__u8 address) : PCA9685(address) { init(); }
 
-    void setServoPosition(char servo, double pwm_phase, double position);
+    void setServoPosition(__u8 servo, double pwm_phase, double position);
     double getResolution();
 };

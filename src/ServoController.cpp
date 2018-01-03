@@ -15,7 +15,7 @@ void ServoController::init() {
 }
 
 void ServoController::setServoPosition
-        (char servo, double pwm_phase, double position) 
+        (__u8 servo, double pwm_phase, double position) 
 {
     if (position < 0 || position > 1) {
         std::cerr << "Invalid servo position " << position << std::endl;

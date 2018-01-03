@@ -12,7 +12,7 @@ protected:
     double pwm_freq{ 200 };
 
 public:
-    PCA9685(char address) : i2cDevice(address) {}
+    PCA9685(__u8 address) : i2cDevice(address) {}
     PCA9685();
 
     void start();
@@ -28,19 +28,19 @@ public:
     void setAutoIncrement(bool value = true);
 
     void activateSubAddr1();
-    void activateSubAddr1(char subaddr);
+    void activateSubAddr1(__u8 subaddr);
     void deactivateSubAddr1();
 
     void activateSubAddr2();
-    void activateSubAddr2(char subaddr);
+    void activateSubAddr2(__u8 subaddr);
     void deactivateSubAddr2();
 
     void activateSubAddr3();
-    void activateSubAddr3(char subaddr);
+    void activateSubAddr3(__u8 subaddr);
     void deactivateSubAddr3();
 
     void activateAllCallAddr();
-    void activateAllCallAddr(char subaddr);
+    void activateAllCallAddr(__u8 subaddr);
     void deactivateAllCallAddr();
 
     void setInvertedLogic(bool value = true);
@@ -58,12 +58,12 @@ public:
 
     void setPWMFreq(double freq);
 
-    void setPWMConstant(char index, bool on);
+    void setPWMConstant(__u8 index, bool on);
     void setAllPWMConstant(bool on);
 
-    void setPWM(char index, uint16_t pwm_on, uint16_t pwm_off);
+    void setPWM(__u8 index, uint16_t pwm_on, uint16_t pwm_off);
     void setAllPWM(uint16_t pwm_on, uint16_t pwm_off);
 
-    void setPWM(char index, double phase, double duty);
+    void setPWM(__u8 index, double phase, double duty);
     void setAllPWM(double phase, double duty);
 };
