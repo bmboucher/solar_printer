@@ -8,7 +8,7 @@ protected:
     const char address;
 
 public:
-    i2c_device(char address) : address(address) {}
+    i2cDevice(char address) : address(address) {}
 
     bool acquire_i2c();
     void write_quick(char value);
