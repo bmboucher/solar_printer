@@ -45,9 +45,10 @@ namespace {
         } \
     } while (false)
 
-constexpr unsigned char SWRST = 0x06;
+constexpr unsigned char SWRST = 0x03;
 void i2cSoftwareReset() {
-    WRAP(i2c_smbus_write_quick(file_i2c(), SWRST));
+    if (!acquire_i2c_(SWRST)) return;
+    WRAP(i2c_smbus_write_quick(file_i2c(), 0));
 }
 
 bool i2cDevice::acquire_i2c() {
