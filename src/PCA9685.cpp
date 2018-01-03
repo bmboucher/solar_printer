@@ -199,7 +199,7 @@ void PCA9685::setPWMFreq(double freq) {
             << std::endl;
     } else {
         char prescale_byte = static_cast<char>(prescale);
-        write_byte_data(PRE_SCALE, prescale_char);
+        write_byte_data(PRE_SCALE, prescale_byte);
         pwm_freq = clk_freq / (BASE_MULTIPLE * (prescale + 1));
     }
 
