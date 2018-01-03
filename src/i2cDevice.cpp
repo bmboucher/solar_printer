@@ -71,9 +71,20 @@ char i2cDevice::read_byte_data(char reg) {
     return static_cast<char>(ret);
 }
 
+bool i2cDevice::read_bit(char reg, char bitmask) {
+    return (read_byte_data(reg) & bitmask) != 0;
+}
+
 void i2cDevice::write_byte_data(char reg, char value) {
     if (!acquire_i2c()) return;
     WRAP(i2c_smbus_write_byte_data(file_i2c(), reg, value));
+}
+
+void i2cDevice::write_bit(char reg, char bitmask, bool value) {
+    if (!acquire_i2c()) return;
+    char curr_value = read_byte_data(reg);
+    char new_value = value ? (curr_value | bitmask) : (curr_value & ~bitmask);
+    write_byte_data(reg, new_value);
 }
 
 uint16_t i2cDevice::read_word_data(char reg) {
