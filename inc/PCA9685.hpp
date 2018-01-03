@@ -7,6 +7,8 @@ class PCA9685 : protected i2cDevice {
 private:
     bool auto_inc{ false };
     double clk_freq{ 25e6 };
+
+protected:
     double pwm_freq{ 200 };
 
 public:
@@ -20,6 +22,7 @@ public:
 
     double getClockFrequency() { return clk_freq; }
     double getPWMFrequency() { return pwm_freq; }
+    double getResolution();
 
     void setExternalClock(double freq);
     void setAutoIncrement(bool value = true);

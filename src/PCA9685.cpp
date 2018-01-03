@@ -52,6 +52,8 @@ constexpr char NUM_PWM = 16;
 
 PCA9685::PCA9685() : PCA9685(DEFAULT_ADDRESS) {}
 
+double PCA9685::getResolution() { return 1.0 / BASE_MULTIPLE; }
+
 void PCA9685::start() {
     write_bit(MODE1, SLEEP, false);
     do {

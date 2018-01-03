@@ -1,13 +1,14 @@
 #pragma once
-#include <memory>
+#include <PCA9685.hpp>
 
-class ServoController {
+class ServoController : protected PCA9685 {
 private:
-    class Implementation;
-    std::unique_ptr<Implementation> pImpl;
+    void init();
+
 public:
-    ServoController();
-    ServoController(char address);
-    ~ServoController();
-    void setServoPosition(char servo, double position);
+    ServoController() : PCA9685() { init(); }
+    ServoController(char address) : PCA9685(address) { init(); }
+
+    void setServoPosition(char servo, double pwm_phase, double position);
+    double getResolution();
 };

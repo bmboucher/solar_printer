@@ -7,6 +7,9 @@ class i2cDevice {
 protected:
     const char address;
 
+public:
+    i2c_device(char address) : address(address) {}
+
     bool acquire_i2c();
     void write_quick(char value);
     char read_byte();
@@ -20,7 +23,4 @@ protected:
     uint16_t process_call(char reg, uint16_t value);
     char read_block_data(char reg, char* buffer);
     void write_block_data(char reg, char length, char* buffer);
-
-public:
-    i2c_device(char address) : address(address) {}
 };
