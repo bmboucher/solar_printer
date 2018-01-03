@@ -3,6 +3,8 @@
 #include <vector>
 #include <cstdint>
 
+void i2cSoftwareReset();
+
 class i2cDevice {
 protected:
     const unsigned char address;
