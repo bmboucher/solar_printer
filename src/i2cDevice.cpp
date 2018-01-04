@@ -157,10 +157,10 @@ void i2c::write_bit
     (unsigned char addr, unsigned char reg, unsigned char bitmask, bool value) 
 {
     if (!acquire_i2c(addr)) return;
-    unsigned char curr_value = read_byte_data(reg);
+    unsigned char curr_value = i2c::read_byte_data(addr, reg);
     unsigned char new_value 
         = value ? (curr_value | bitmask) : (curr_value & ~bitmask);
-    i2c::write_byte_data(reg, new_value);
+    i2c::write_byte_data(addr, reg, new_value);
 }
 void i2cDevice::write_bit
     (unsigned char reg, unsigned char bitmask, bool value) {
@@ -191,7 +191,7 @@ void i2cDevice::write_word_data(unsigned char reg, uint16_t value) {
 }
 
 // Write word to register, then read register back out
-uint16_t i2cDevice::process_call
+uint16_t i2c::process_call
     (unsigned char addr, unsigned char reg, uint16_t value) 
 {
     if (!acquire_i2c(addr)) return 0;
@@ -206,7 +206,7 @@ uint16_t i2cDevice::process_call(unsigned char reg, uint16_t value) {
 }
 
 // Read multiple registers
-unsigned char i2cDevice::read_block_data
+unsigned char i2c::read_block_data
         (unsigned char addr, unsigned char reg, unsigned char* buffer) 
 {
     if (!acquire_i2c(addr)) return 0;
