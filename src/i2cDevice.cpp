@@ -76,7 +76,7 @@ namespace {
     }
 }
 
-void setLogging(bool value) { logging = value; }
+void i2c::setLogging(bool value) { logging = value; }
 
 #define WRAP(X) \
     int ret = X; \
