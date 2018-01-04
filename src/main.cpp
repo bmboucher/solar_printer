@@ -3,9 +3,11 @@
 #include <unistd.h>
 
 int main(int argc, char* argv[]) {   
+    i2c::setLogging(true);
     i2c::softwareReset();
 
     Hardware hw;
+    return 0;
     double pan = -90;
     double inc = 10;
     while (true) {
