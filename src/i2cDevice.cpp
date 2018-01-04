@@ -67,10 +67,10 @@ namespace {
             << bitset<8>(reg) << ' '
             << bitset<16>(value) << std::endl;
     }
-    void i2cLog(unsigned char reg, bool write,
+    void i2cLog(bool write, unsigned char reg,
                 unsigned char length, const unsigned char* values) {
         if (!logging) return;
-        i2cLog(reg, write, values[0]);
+        i2cLog(write, reg, values[0]);
         for (unsigned char i = 1; i < length; i++)
             i2cLog(write, values[i]);
     }
@@ -212,7 +212,7 @@ unsigned char i2c::read_block_data
     if (!acquire_i2c(addr)) return 0;
     WRAP(i2c_smbus_read_block_data(file_i2c(), reg, buffer));
     unsigned char n_bytes = static_cast<unsigned char>(ret);
-    i2cLog(reg, false, n_bytes, buffer); return n_bytes;
+    i2cLog(false, reg, n_bytes, buffer); return n_bytes;
 }
 unsigned char i2cDevice::read_block_data
     (unsigned char reg, unsigned char* buffer) 
@@ -226,7 +226,7 @@ void i2c::write_block_data
 {
     if (!acquire_i2c(addr)) return;
     WRAP(i2c_smbus_write_block_data(file_i2c(), reg, length, buffer));
-    i2cLog(reg, true, length, buffer);
+    i2cLog(true, reg, length, buffer);
 }
 void i2cDevice::write_block_data
     (unsigned char reg, unsigned char length, const unsigned char* buffer) 
