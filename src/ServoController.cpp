@@ -1,9 +1,9 @@
 #include <ServoController.hpp>
 #include <iostream>
 
-constexpr double SERVO_PWM_FREQ = 60;
-constexpr double MIN_PULSE_MS = 1.0;
-constexpr double MAX_PULSE_MS = 2.0;
+constexpr double SERVO_PWM_FREQ = 50;
+constexpr double MIN_PULSE_MS = 0.5;
+constexpr double MAX_PULSE_MS = 2.5;
 
 void ServoController::init() {
     //setAutoIncrement();
