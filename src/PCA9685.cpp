@@ -96,7 +96,6 @@ namespace {
                 const dur_ms actual_dur
                     = std::chrono::duration_cast<dur_ms>(curr_time - last_time);
                 if (actual_dur >= tgt_dur && chip->getOutputEnable()) {
-                    std::cout << "Turning off pin" << std::endl;
                     chip->setOutputEnable(false);
                 }
             }

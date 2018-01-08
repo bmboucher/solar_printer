@@ -4,7 +4,7 @@
 constexpr double SERVO_PWM_FREQ = 50;
 constexpr double MIN_PULSE_MS = 0.5;
 constexpr double MAX_PULSE_MS = 2.5;
-constexpr size_t AUTO_OFF_MS = 2000;
+constexpr size_t AUTO_OFF_MS = 5000;
 
 void ServoController::init() {
     setAutoIncrement();
