@@ -5,7 +5,7 @@ class ServoController;
 
 class Hardware {
 private:
-    std::unique_ptr<ServoController> servoController{ nullptr };
+    std::unique_ptr<ServoController> servoController;
 public:
     Hardware();
     Hardware(const Hardware& rhs) = delete;

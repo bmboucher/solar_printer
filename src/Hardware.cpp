@@ -9,7 +9,7 @@ constexpr double PAN_SERVO_PHASE = 0;
 constexpr unsigned char TILT_SERVO = 1;
 constexpr double TILT_SERVO_PHASE = 0.5;
 
-Hardware::Hardware() {
+Hardware::Hardware() : servoController(nullptr) {
     i2c::softwareReset();
     servoController.reset(new ServoController());
 }
