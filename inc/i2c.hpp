@@ -21,7 +21,8 @@ void write_word_data
 uint16_t process_call
     (unsigned char addr, unsigned char reg, uint16_t value);
 unsigned char read_block_data
-    (unsigned char addr, unsigned char reg, unsigned char* buffer);
+    (unsigned char addr, unsigned char reg, 
+        unsigned char length, unsigned char* buffer);
 void write_block_data
     (unsigned char addr, unsigned char reg, 
            unsigned char length, const unsigned char* buffer);
@@ -48,6 +49,8 @@ public:
     uint16_t read_word_data(unsigned char reg);
     void write_word_data(unsigned char reg, uint16_t value);
     uint16_t process_call(unsigned char reg, uint16_t value);
-    unsigned char read_block_data(unsigned char reg, unsigned char* buffer);
-    void write_block_data(unsigned char reg, unsigned char length, const unsigned char* buffer);
+    unsigned char read_block_data
+        (unsigned char reg, unsigned char length, unsigned char* buffer);
+    void write_block_data
+        (unsigned char reg, unsigned char length, const unsigned char* buffer);
 };

@@ -207,17 +207,23 @@ uint16_t i2cDevice::process_call(unsigned char reg, uint16_t value) {
 
 // Read multiple registers
 unsigned char i2c::read_block_data
-        (unsigned char addr, unsigned char reg, unsigned char* buffer) 
+        (unsigned char addr, unsigned char reg,
+         unsigned char length, unsigned char* buffer) 
 {
     if (!acquire_i2c(addr)) return 0;
-    WRAP(i2c_smbus_read_i2c_block_data(file_i2c(), reg, buffer));
+    WRAP(i2c_smbus_read_i2c_block_data(file_i2c(), reg, length, buffer));
     unsigned char n_bytes = static_cast<unsigned char>(ret);
+    if (n_bytes != length) {
+        std::cerr << "Only read " << ret << " of the requested "
+            << (int)length << " bytes from register " 
+            << (int)reg << std::endl;
+    }
     i2cLog(false, reg, n_bytes, buffer); return n_bytes;
 }
 unsigned char i2cDevice::read_block_data
-    (unsigned char reg, unsigned char* buffer) 
+    (unsigned char reg, unsigned char length, unsigned char* buffer) 
 {
-    return i2c::read_block_data(address, reg, buffer);
+    return i2c::read_block_data(address, reg, length, buffer);
 }
 
 // Write multiple registers
