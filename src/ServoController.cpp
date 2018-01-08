@@ -6,8 +6,8 @@ constexpr double MIN_PULSE_MS = 1.0;
 constexpr double MAX_PULSE_MS = 2.0;
 
 void ServoController::init() {
-    setAutoIncrement();
-    setOutputChangeOnAck();
+    //setAutoIncrement();
+    //setOutputChangeOnAck();
     setTotemPoleOutputs();
     setPWMFreq(SERVO_PWM_FREQ);
     setAllPWMConstant(false);

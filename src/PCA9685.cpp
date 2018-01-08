@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <bitset>
 
 using std::vector;
 
@@ -216,6 +217,7 @@ void PCA9685::setPWM(unsigned char index, uint16_t pwm_on, uint16_t pwm_off) {
     } else {
         start_register = LED0_ON_L + 4 * index;
     }
+    std::cout << "start_register = " << std::bitset<8>(start_register) << std::endl;
     vector<unsigned char> bytes(4, 0);
     bytes[0] = static_cast<unsigned char>(pwm_on & 0xFF);
     bytes[1] = static_cast<unsigned char>((pwm_on >> 8) & 0x1F);
@@ -230,11 +232,12 @@ void PCA9685::setPWM(unsigned char index, uint16_t pwm_on, uint16_t pwm_off) {
 }
 
 void PCA9685::setPWMConstant(unsigned char index, bool on) {
+    const uint16_t zero = 0x00;
     const uint16_t full_flag = 0x1000;
     if (on) {
-        setPWM(index, full_flag, 0);
+        setPWM(index, full_flag, zero);
     } else {
-        setPWM(index, 0, full_flag);
+        setPWM(index, zero, full_flag);
     }
 }
 
