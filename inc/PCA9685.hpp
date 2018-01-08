@@ -4,6 +4,9 @@
 #include <GPIOPin.hpp>
 #include <cstdint>
 #include <vector>
+#include <chrono>
+#include <memory>
+#include <thread>
 
 class PCA9685 : protected i2cDevice {
 private:
@@ -13,16 +16,23 @@ private:
     std::vector<uint16_t> pwm_on_reg;
     std::vector<uint16_t> pwm_off_reg;
     double pwm_freq{ 200 };
+    std::chrono::high_resolution_clock::time_point last_on;
+    size_t auto_off_ms{ 0 };
+    std::unique_ptr<std::thread> autoOffThread{ nullptr };
 
 public:
     PCA9685(unsigned char address, unsigned char oePin);
+    PCA9685();
+    ~PCA9685();
     PCA9685(const PCA9685& rhs) = delete;
     PCA9685(PCA9685&& rhs) = delete;
-    PCA9685();
 
     bool getOutputEnable() { return !oePin.getValue(); }
     void setOutputEnable(bool enable) { return oePin.setValue(!enable); }
     void forceOutputEnable();
+
+    void setAutoOff(size_t ms);
+    void disableAutoOff() { setAutoOff(0); }
 
     void start();
     void sleep();

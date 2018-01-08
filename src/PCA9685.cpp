@@ -5,6 +5,8 @@
 #include <iostream>
 #include <vector>
 #include <bitset>
+#include <chrono>
+#include <functional>
 
 using std::vector;
 
@@ -57,20 +59,69 @@ constexpr uint16_t FULL_FLAG  = 0x1000;
 
 constexpr useconds_t SLEEP_US = 500;
 
+using clk = std::chrono::high_resolution_clock;
+
 PCA9685::PCA9685(unsigned char address, unsigned char oePin) :
     i2cDevice(address),
     oePin(oePin),
     pwm_on_reg(NUM_PWM, EMPTY_FLAG), 
-    pwm_off_reg(NUM_PWM, FULL_FLAG) {}
+    pwm_off_reg(NUM_PWM, FULL_FLAG),
+    last_on(clk::now()) {}
 
 PCA9685::PCA9685() : PCA9685(DEFAULT_ADDRESS, DEFAULT_OE_PIN) {}
+
+namespace {
+    void killThreadPtr(std::unique_ptr<std::thread>& threadPtr) {
+        if (threadPtr && threadPtr->joinable()) threadPtr->join();
+        threadPtr.reset(nullptr);
+    }
+
+    using dur_ms = std::chrono::duration<size_t, std::milli>;
+    void autoOffLoop
+        (const clk::time_point& last_on, 
+         const size_t& auto_off_ms,
+         PCA9685& chip) 
+    {
+        while (true) {
+            const dur_ms tgt_dur(auto_off_ms);
+            if (tgt_dur.count() == 0) break;
+            const clk::time_point curr_time = clk::now();
+            const clk::time_point last_time = last_on;
+            if (curr_time <= last_time) continue;
+            const dur_ms actual_dur
+                = std::chrono::duration_cast<dur_ms>(curr_time - last_time);
+            if (actual_dur >= tgt_dur) {
+                chip.setOutputEnable(false);
+            } else {
+                std::this_thread::sleep_for(tgt_dur);
+            }
+        }
+    }
+}
+
+PCA9685::~PCA9685() {
+    killThreadPtr(autoOffThread);
+}
 
 double PCA9685::getResolution() { return 1.0 / BASE_MULTIPLE; }
 
 void PCA9685::forceOutputEnable() {
+    last_on = clk::now();
     if (getOutputEnable()) return;
     setOutputEnable(true);
     usleep(SLEEP_US);
+}
+
+void PCA9685::setAutoOff(size_t ms) {
+    last_on = clk::now();
+    auto_off_ms = ms;
+    if (ms > 0) {
+        if (!autoOffThread) 
+            autoOffThread.reset(new std::thread(
+                autoOffLoop, last_on, auto_off_ms, *this));
+    } else {
+        killThreadPtr(autoOffThread);
+    }
 }
 
 void PCA9685::start() {
