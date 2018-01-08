@@ -9,6 +9,7 @@
 using std::vector;
 
 constexpr unsigned char DEFAULT_ADDRESS = 0x40;
+constexpr unsigned char DEFAULT_OE_PIN  = 4;
 
 // Register addresses
 constexpr unsigned char MODE1        = 0x00;
@@ -54,24 +55,35 @@ constexpr unsigned char NUM_PWM = 16;
 constexpr uint16_t EMPTY_FLAG = 0x0000;
 constexpr uint16_t FULL_FLAG  = 0x1000;
 
-PCA9685::PCA9685(unsigned char address) : 
-    i2cDevice(address), 
+constexpr useconds_t SLEEP_US = 500;
+
+PCA9685::PCA9685(unsigned char address, unsigned char oePin) :
+    i2cDevice(address),
+    oePin(oePin),
     pwm_on_reg(NUM_PWM, EMPTY_FLAG), 
     pwm_off_reg(NUM_PWM, FULL_FLAG) {}
 
-PCA9685::PCA9685() : PCA9685(DEFAULT_ADDRESS) {}
+PCA9685::PCA9685() : PCA9685(DEFAULT_ADDRESS, DEFAULT_OE_PIN) {}
 
 double PCA9685::getResolution() { return 1.0 / BASE_MULTIPLE; }
 
+void forceOutputEnable() {
+    if (getOutputEnable()) return;
+    setOutputEnable(true);
+    usleep(SLEEP_US);
+}
+
 void PCA9685::start() {
+    forceOutputEnable();
     write_bit(MODE1, SLEEP, false);
     do {
-        usleep(500);
+        usleep(SLEEP_US);
     } while (isSleeping());
 }
 
 void PCA9685::sleep() {
     write_bit(MODE1, SLEEP, true);
+    setOutputEnable(false);
 }
 
 bool PCA9685::isSleeping() {
@@ -79,16 +91,17 @@ bool PCA9685::isSleeping() {
 }
 
 void PCA9685::restart() {
+    forceOutputEnable();
     unsigned char m = read_byte_data(MODE1);
     if (m & SLEEP == 0) return;
     if (m & RESTART == 0) { start(); return; }
     m = m & ~SLEEP;     // Clear SLEEP bit
     write_byte_data(MODE1, m);
-    usleep(500);        // Stabilize oscillator
+    usleep(SLEEP_US);   // Stabilize oscillator
     m = m | RESTART;    // Set RESTART bit
     write_byte_data(MODE1, m);
     do {
-        usleep(100);
+        usleep(SLEEP_US);
     } while (!read_bit(MODE1, RESTART)); // Wait for RESTART to clear
 }
 
@@ -192,6 +205,8 @@ void PCA9685::setOutputEnableEffect(PCA9685::OE_EFFECT effect) {
 }
 
 void PCA9685::setPWMFreq(double freq) {
+    forceOutputEnable();
+
     bool active = !isSleeping();
     if (active) this->sleep();
 
@@ -219,6 +234,7 @@ void PCA9685::setPWM(unsigned char index, uint16_t pwm_on, uint16_t pwm_off) {
     if (index > NUM_PWM) {
         std::cerr << "Invalid PWM index " << index << std::endl; return;
     }
+    forceOutputEnable();
     unsigned char start_register{ 0 };
     if (index == NUM_PWM) {
         start_register = ALL_LED_ON_L;

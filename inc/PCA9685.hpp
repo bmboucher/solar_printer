@@ -1,11 +1,13 @@
 #pragma once
 
 #include <i2c.hpp>
+#include <GPIOPin.hpp>
 #include <cstdint>
 #include <vector>
 
 class PCA9685 : protected i2cDevice {
 private:
+    GPIOPin oePin;
     bool auto_inc{ false };
     double clk_freq{ 25e6 };
     std::vector<uint16_t> pwm_on_reg;
@@ -13,8 +15,14 @@ private:
     double pwm_freq{ 200 };
 
 public:
-    PCA9685(unsigned char address);
+    PCA9685(unsigned char address, unsigned char oePin);
+    PCA9685(const PCA9685& rhs) = delete;
+    PCA9685(PCA9685&& rhs) = delete;
     PCA9685();
+
+    bool getOutputEnable() { return !oePin.getValue(); }
+    void setOutputEnable(bool enable) { return oePin.setValue(!enable); }
+    void forceOutputEnable();
 
     void start();
     void sleep();
