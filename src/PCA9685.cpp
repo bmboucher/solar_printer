@@ -308,7 +308,8 @@ void PCA9685::setAllPulseWidth(double phase, double pulse_ms) {
 double PCA9685::getPhase(unsigned char index) const {
     if (index >= NUM_PWM) {
         std::cerr << "Cannot get phase for invalid index " 
-                  << (int)index << std::endl;
+                  << (int)index << std::endl; 
+        return 0.0;
     } else {
         const uint16_t pwm_on = pwm_on_reg[index];
         if (pwm_on == FULL_FLAG) return 0.0;
@@ -319,7 +320,8 @@ double PCA9685::getPhase(unsigned char index) const {
 double PCA9685::getDutyCycle(unsigned char index) const {
     if (index >= NUM_PWM) {
         std::cerr << "Cannot get duty cycle for invalid index "
-            << (int)index << std::endl;
+            << (int)index << std::endl; 
+        return 0.0;
     } else {
         const uint16_t pwm_on = pwm_on_reg[index];
         if (pwm_on == FULL_FLAG) return 1.0;
@@ -331,4 +333,10 @@ double PCA9685::getDutyCycle(unsigned char index) const {
         diff = (diff < 0) ? diff + BASE_MULTIPLE : diff;
         return diff / BASE_MULTIPLE;
     }
+}
+
+double PCA9685::getPulseWidth(unsigned char index) const {
+    const double pwm_ms = 1000.0 / pwm_freq;
+    const double duty_cycle = getPulseWidth(index);
+    return duty_cycle * pwm_ms;
 }
