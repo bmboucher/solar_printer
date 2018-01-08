@@ -51,6 +51,14 @@ constexpr unsigned char MIN_PRESCALE = 0x03;
 constexpr unsigned char MAX_PRESCALE = 0xFF;
 constexpr unsigned char NUM_PWM = 16;
 
+constexpr uint16_t EMPTY_FLAG = 0x0000;
+constexpr uint16_t FULL_FLAG  = 0x1000;
+
+PCA9685::PCA9685(unsigned char address) : 
+    i2cDevice(address), 
+    pmw_on_reg(NUM_PWM, EMPTY_FLAG), 
+    pwm_off_reg(NUM_PWM, FULL_FLAG) {}
+
 PCA9685::PCA9685() : PCA9685(DEFAULT_ADDRESS) {}
 
 double PCA9685::getResolution() { return 1.0 / BASE_MULTIPLE; }
@@ -228,15 +236,20 @@ void PCA9685::setPWM(unsigned char index, uint16_t pwm_on, uint16_t pwm_off) {
         for (unsigned char i = 0; i < 4; i++)
             write_byte_data(start_register + i, bytes[i]);
     }
+    if (index == NUM_PWM) {
+        std::fill(pwm_on_reg.begin(), pwm_on_reg.end(), pwm_on);
+        std::fill(pwm_off_reg.begin(), pwm_off_reg.end(), pwm_off);
+    } else {
+        pwm_on_reg[index] = pwm_on;
+        pwm_off_reg[index] = pwm_off;
+    }
 }
 
 void PCA9685::setPWMConstant(unsigned char index, bool on) {
-    const uint16_t zero = 0x00;
-    const uint16_t full_flag = 0x1000;
     if (on) {
-        setPWM(index, full_flag, zero);
+        setPWM(index, FULL_FLAG, EMPTY_FLAG);
     } else {
-        setPWM(index, zero, full_flag);
+        setPWM(index, EMPTY_FLAG, FULL_FLAG);
     }
 }
 
@@ -246,6 +259,12 @@ void PCA9685::setPWM(unsigned char index, double phase, double duty) {
     }
     if (duty < 0 || duty > 1) {
         std::cerr << "Invalid PWM duty cycle " << duty << std::endl; return;
+    }
+    if (duty == 0) {
+        setPWMConstant(index, false); return;
+    }
+    if (duty == 1) {
+        setPWMConstant(index, true); return;
     }
 
     double pwm_on_d = round(phase * BASE_MULTIPLE);
@@ -260,6 +279,16 @@ void PCA9685::setPWM(unsigned char index, double phase, double duty) {
     setPWM(index, pwm_on, pwm_off);
 }
 
+void PCA9685::setPulseWidth(unsigned char index, double phase, double pulse_ms) {
+    const double pwm_ms = 1000.0 / pwm_freq;
+    if (pulse_ms < 0 || pulse_ms > pwm_ms) {
+        std::cerr << "Cannot set invalid pulse width " << pulse_ms
+                  << " ms" << std::endl; return;
+    }
+    const double duty_cycle = pulse_ms / pwm_ms;
+    setPWM(index, phase, duty_cycle);
+}
+
 void PCA9685::setAllPWMConstant(bool on) {
     setPWMConstant(NUM_PWM, on);
 }
@@ -270,4 +299,36 @@ void PCA9685::setAllPWM(uint16_t pwm_on, uint16_t pwm_off) {
 
 void PCA9685::setAllPWM(double phase, double duty) {
     setPWM(NUM_PWM, phase, duty);
+}
+
+void PCA9685::setAllPulseWidth(double phase, double pulse_ms) {
+    setPulseWidth(NUM_PWM, phase, pulse_ms);
+}
+
+double PCA9685::getPhase(unsigned char index) const {
+    if (index >= NUM_PWM) {
+        std::cerr << "Cannot get phase for invalid index " 
+                  << (int)index << std::endl;
+    } else {
+        const uint16_t pwm_on = pwm_on_reg[index];
+        if (pwm_on == FULL_FLAG) return 0.0;
+        return static_cast<double>(pwm_on) / BASE_MULTIPLE;
+    }
+}
+
+double PCA9685::getDutyCycle(unsigned char index) const {
+    if (index >= NUM_PWM) {
+        std::cerr << "Cannot get duty cycle for invalid index "
+            << (int)index << std::endl;
+    } else {
+        const uint16_t pwm_on = pwm_on_reg[index];
+        if (pwm_on == FULL_FLAG) return 1.0;
+        const uint16_t pwm_off = pwm_off_reg[index];
+        if (pwm_off == FULL_FLAG) return 0.0;
+        const double pwm_on_d = static_cast<double>(pwm_on);
+        const double pwm_off_d = static_cast<double>(pwm_off);
+        double diff = pwm_off_d - pwm_on_d;
+        diff = (diff < 0) ? diff + BASE_MULTIPLE : diff;
+        return diff / BASE_MULTIPLE;
+    }
 }

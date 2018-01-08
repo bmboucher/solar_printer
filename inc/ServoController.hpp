@@ -14,4 +14,6 @@ public:
     void setServoPosition
         (unsigned char servo, double pwm_phase, double position);
     double getResolution();
+    double getPulseWidth(unsigned char servo);
+    double getServoPosition(unsigned char servo);
 };

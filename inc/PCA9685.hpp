@@ -2,17 +2,18 @@
 
 #include <i2c.hpp>
 #include <cstdint>
+#include <vector>
 
 class PCA9685 : protected i2cDevice {
 private:
     bool auto_inc{ false };
     double clk_freq{ 25e6 };
-
-protected:
+    std::vector<uint16_t> pwm_on_reg;
+    std::vector<uint16_t> pwm_off_reg;
     double pwm_freq{ 200 };
 
 public:
-    PCA9685(unsigned char address) : i2cDevice(address) {}
+    PCA9685(unsigned char address);
     PCA9685();
 
     void start();
@@ -66,4 +67,12 @@ public:
 
     void setPWM(unsigned char index, double phase, double duty);
     void setAllPWM(double phase, double duty);
+
+    void setPulseWidth(unsigned char index, double phase, double pulse_ms);
+    void setAllPulseWidth(double phase, double pulse_ms);
+
+    double getPWMFreq() const { return pwm_freq; }
+    double getPhase(unsigned char index) const;
+    double getDutyCycle(unsigned char index) const;
+    double getPulseWidth(unsigned char index) const;
 };
