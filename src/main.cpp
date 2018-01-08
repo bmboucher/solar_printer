@@ -1,11 +1,20 @@
 #include <i2cDevice.hpp>
-#include <Hardware.hpp>
+#include <ServoController.hpp>
 #include <unistd.h>
+#include <iostream>
 
 int main(int argc, char* argv[]) {   
     i2c::setLogging(true);
     i2c::softwareReset();
 
+    ServoController servo;
+    double pulse_ms;
+    while (true) {
+        std::cout << "Enter pulse ms: " << std::flush;
+        std::cin >> pulse_ms;
+        servo.setPulseWidth(0, 0, pulse_ms);
+    }
+    /*
     Hardware hw;
     double pan = -90;
     double inc = 10;
@@ -16,4 +25,5 @@ int main(int argc, char* argv[]) {
         if (pan <= -90) inc = 10;
         sleep(1);
     }
+    */
 }

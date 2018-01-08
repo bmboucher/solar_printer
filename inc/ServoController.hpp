@@ -9,6 +9,9 @@ public:
     ServoController() : PCA9685() { init(); }
     ServoController(unsigned char address) : PCA9685(address) { init(); }
 
-    void setServoPosition(unsigned char servo, double pwm_phase, double position);
+    void setPulseWidth
+        (unsigned char servo, double pwm_phase, double pulse_ms);
+    void setServoPosition
+        (unsigned char servo, double pwm_phase, double position);
     double getResolution();
 };
