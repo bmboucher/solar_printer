@@ -67,7 +67,7 @@ PCA9685::PCA9685() : PCA9685(DEFAULT_ADDRESS, DEFAULT_OE_PIN) {}
 
 double PCA9685::getResolution() { return 1.0 / BASE_MULTIPLE; }
 
-void forceOutputEnable() {
+void PCA9685::forceOutputEnable() {
     if (getOutputEnable()) return;
     setOutputEnable(true);
     usleep(SLEEP_US);
