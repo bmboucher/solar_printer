@@ -34,7 +34,7 @@ void ServoController::setServoPosition
 double ServoController::getResolution() 
 {
     const double freq_res = PCA9685::getResolution();
-    const double pwm_width = 1000.0 / pwm_freq;
+    const double pwm_width = 1000.0 / getPWMFreq();
     const double ms_res = pwm_width * freq_res;
     return ms_res / (MAX_PULSE_MS - MIN_PULSE_MS);
 }
