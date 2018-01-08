@@ -2,11 +2,24 @@
 #include <unistd.h>
 #include <iostream>
 
+void setMirrorPositionManually(Hardware& hw) {
+    double pan{ 0 }, tilt{ 0 };
+    std::cout << "Enter pan angle: " << std::flush;
+    std::cin >> pan;
+    std::wcout << "Enter tilt angle: " << std::flush;
+    std::wcin >> tilt;
+    hw.setMirrorPan(pan);
+    hw.setMirrorTilt(tilt);
+}
+
 int main(int argc, char* argv[]) {   
     Hardware hw;
     double pan = -90;
     double inc = 10;
     while (true) {
+        setMirrorPositionManually(hw);
+
+        /*
         hw.setMirrorPan(pan);
         pan += inc;
         if (pan >= 90) inc = -10;
@@ -20,5 +33,6 @@ int main(int argc, char* argv[]) {
             hw.setMirrorTilt(tilt);
             usleep(250000);
         }
+        */
     }
 }
