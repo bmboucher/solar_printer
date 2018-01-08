@@ -62,16 +62,16 @@ GPIOPin::~GPIOPin() {
     unexportPin(pin);
 }
 
-void GPIOPin::setDirection(GPIOPin::Direction dir) {
+void GPIOPin::setDirection(Direction dir) {
     ofstream fout{ gpioPath(pin, s_direction) };
     switch (dir) {
-        case GPIOPin::Direction::INPUT: fout << "in"; break;
-        case GPIOPin::Direction::OUTPUT: fout << "out"; break;
+        case Direction::INPUT: fout << "in"; break;
+        case Direction::OUTPUT: fout << "out"; break;
     }
 }
 
 void GPIOPin::setValue(bool value) {
-    if (dir != GPIOPin::DIRECTION::OUTPUT) {
+    if (dir != Direction::OUTPUT) {
         std::cerr << "Cannot set value for pin " << pin
                   << " - direction is set to INPUT" << std::endl;
     } else {
@@ -81,7 +81,7 @@ void GPIOPin::setValue(bool value) {
 }
 
 bool GPIOPin::getValue() {
-    if (dir != GPIOPin::DIRECTION::INPUT) {
+    if (dir != Direction::INPUT) {
         std::cerr << "Cannot get value for pin " << pin
                   << " - direction is set to OUTPUT" << std::endl;
     } else {
