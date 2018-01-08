@@ -21,7 +21,7 @@ void ServoController::setPulseWidth
     if (pulse_ms < 0 || pulse_ms > pwm_width) {
         std::cerr << "Invalid pulse width " << pulse_ms << " ms" << std::endl;
     }
-    const double duty_cycle = pulse_width / pwm_width;
+    const double duty_cycle = pulse_ms / pwm_width;
     std::cout << "Setting duty cycle to " << duty_cycle
               << " = (" << pulse_ms << " ms / " << pwm_width << " ms)"
               << std::endl;
@@ -34,9 +34,9 @@ void ServoController::setServoPosition
     if (position < 0 || position > 1) {
         std::cerr << "Invalid servo position " << position << std::endl;
     }
-    const double pulse_width 
+    const double pulse_ms
         = MIN_PULSE_MS + position * (MAX_PULSE_MS - MIN_PULSE_MS);
-    setPulseWidth(servo, pwm_phase, pulse_width);
+    setPulseWidth(servo, pwm_phase, pulse_ms);
 }
 
 double ServoController::getResolution() 
