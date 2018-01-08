@@ -22,9 +22,6 @@ void ServoController::setPulseWidth
         std::cerr << "Invalid pulse width " << pulse_ms << " ms" << std::endl;
     }
     const double duty_cycle = pulse_ms / pwm_width;
-    std::cout << "Setting duty cycle to " << duty_cycle
-              << " = (" << pulse_ms << " ms / " << pwm_width << " ms)"
-              << std::endl;
     setPWM(servo, pwm_phase, duty_cycle);
 }
 

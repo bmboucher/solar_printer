@@ -217,7 +217,6 @@ void PCA9685::setPWM(unsigned char index, uint16_t pwm_on, uint16_t pwm_off) {
     } else {
         start_register = LED0_ON_L + 4 * index;
     }
-    std::cout << "start_register = " << std::bitset<8>(start_register) << std::endl;
     vector<unsigned char> bytes(4, 0);
     bytes[0] = static_cast<unsigned char>(pwm_on & 0xFF);
     bytes[1] = static_cast<unsigned char>((pwm_on >> 8) & 0x1F);
