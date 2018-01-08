@@ -56,7 +56,7 @@ constexpr uint16_t FULL_FLAG  = 0x1000;
 
 PCA9685::PCA9685(unsigned char address) : 
     i2cDevice(address), 
-    pmw_on_reg(NUM_PWM, EMPTY_FLAG), 
+    pwm_on_reg(NUM_PWM, EMPTY_FLAG), 
     pwm_off_reg(NUM_PWM, FULL_FLAG) {}
 
 PCA9685::PCA9685() : PCA9685(DEFAULT_ADDRESS) {}
