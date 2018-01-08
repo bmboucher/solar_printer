@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
     while (true) {
         std::cout << "Enter pulse ms: " << std::flush;
         std::cin >> pulse_ms;
-        servo.setPulseWidth(0, 0, pulse_ms);
+        servo.setPulseWidth(1, 0, pulse_ms);
     }
     /*
     Hardware hw;
