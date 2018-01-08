@@ -80,7 +80,7 @@ namespace {
     void autoOffLoop
         (const clk::time_point& last_on, 
          const size_t& auto_off_ms,
-         PCA9685& chip) 
+         PCA9685* chip) 
     {
         while (true) {
             const dur_ms tgt_dur(auto_off_ms);
@@ -91,7 +91,7 @@ namespace {
             const dur_ms actual_dur
                 = std::chrono::duration_cast<dur_ms>(curr_time - last_time);
             if (actual_dur >= tgt_dur) {
-                chip.setOutputEnable(false);
+                chip->setOutputEnable(false);
             } else {
                 std::this_thread::sleep_for(tgt_dur);
             }
@@ -118,7 +118,7 @@ void PCA9685::setAutoOff(size_t ms) {
     if (ms > 0) {
         if (!autoOffThread) 
             autoOffThread.reset(new std::thread(
-                autoOffLoop, last_on, auto_off_ms, *this));
+                autoOffLoop, last_on, auto_off_ms, this));
     } else {
         killThreadPtr(autoOffThread);
     }
