@@ -1,6 +1,6 @@
 #pragma once
 
-#include <i2cDevice.hpp>
+#include <i2c.hpp>
 #include <cstdint>
 
 class PCA9685 : protected i2cDevice {

@@ -1,12 +1,14 @@
 #pragma once
+#include <memory>
 
-#include <ServoController.hpp>
+class ServoController;
 
 class Hardware {
 private:
-    ServoController servoController;
+    std::unique_ptr<ServoController> servoController{ nullptr };
 public:
-    Hardware() = default;
+    Hardware();
+    ~Hardware();
 
     void setMirrorPan(double deg);
     void setMirrorTilt(double deg);

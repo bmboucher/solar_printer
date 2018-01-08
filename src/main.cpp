@@ -1,12 +1,8 @@
-#include <i2cDevice.hpp>
 #include <Hardware.hpp>
 #include <unistd.h>
 #include <iostream>
 
 int main(int argc, char* argv[]) {   
-    i2c::setLogging(true);
-    i2c::softwareReset();
-
     Hardware hw;
     double pan = -90;
     double inc = 10;
