@@ -7,7 +7,7 @@ void setMirrorPositionManually(Hardware& hw) {
     std::cout << "Enter pan angle: " << std::flush;
     std::cin >> pan;
     std::wcout << "Enter tilt angle: " << std::flush;
-    std::wcin >> tilt;
+    std::cin >> tilt;
     hw.setMirrorPan(pan);
     hw.setMirrorTilt(tilt);
 }
