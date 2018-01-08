@@ -14,7 +14,7 @@ Hardware::Hardware() {
     servoController.reset(new ServoController());
 }
 
-~Hardware::Hardware() = default;
+Hardware::~Hardware() = default;
 
 void Hardware::setMirrorPan(double deg) {
     if (!servoController) return;
