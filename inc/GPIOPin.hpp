@@ -18,4 +18,5 @@ public:
 private:
     const unsigned char pin;
     Direction dir;
+    bool value;
 };

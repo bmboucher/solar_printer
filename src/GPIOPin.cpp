@@ -53,7 +53,9 @@ namespace {
     }
 }
 
-GPIOPin::GPIOPin(unsigned char pin, Direction dir) : pin(pin), dir(dir) {
+GPIOPin::GPIOPin(unsigned char pin, Direction dir) 
+    : pin(pin), dir(dir), value(false) 
+{
     exportPin(pin);
     setDirection(dir);
 }
@@ -70,24 +72,25 @@ void GPIOPin::setDirection(Direction dir) {
     }
 }
 
-void GPIOPin::setValue(bool value) {
+void GPIOPin::setValue(bool val) {
     if (dir != Direction::OUTPUT) {
         std::cerr << "Cannot set value for pin " << pin
                   << " - direction is set to INPUT" << std::endl;
     } else {
         ofstream fout{ gpioPath(pin, s_value) };
-        fout << (value ? 1 : 0);
+        fout << (val ? 1 : 0);
+        value = val;
     }
 }
 
 bool GPIOPin::getValue() {
     if (dir != Direction::INPUT) {
-        std::cerr << "Cannot get value for pin " << pin
-                  << " - direction is set to OUTPUT" << std::endl;
+        return value;
     } else {
-        size_t value;
+        size_t val;
         ifstream fin{ gpioPath(pin, s_value) };
-        fin >> value;
-        return (value != 0);
+        fin >> val;
+        value = (val != 0);
+        return value;
     }
 }
