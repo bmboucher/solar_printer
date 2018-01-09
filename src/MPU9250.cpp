@@ -37,7 +37,7 @@ namespace {
 
     void writeBlockData(uint8_t reg, size_t n_bytes, const uint8_t* values) {
         if (spi() < 0) {
-            std::cerr << "Unable to open SPI" << std::endl; return 0;
+            std::cerr << "Unable to open SPI" << std::endl; return;
         }
         vector<uint8_t> buffer(n_bytes + 1, 0);
         buffer[0] = reg & ~I2C_RD_BIT;
@@ -45,9 +45,6 @@ namespace {
         if (wiringPiSPIDataRW(SPI_CHANNEL, buffer.data(), n_bytes + 1) < 0) {
             std::cerr << "Error sending " << n_bytes << " bytes"
                 << " to register " << byteset(reg) << std::endl;
-            return 0;
-        } else {
-            return buffer[1];
         }
     }
 
@@ -68,13 +65,13 @@ namespace {
 
     void readBlockData(uint8_t reg, size_t n_bytes, uint8_t* values) {
         if (spi() < 0) {
-            std::cerr << "Unable to open SPI" << std::endl; return 0;
+            std::cerr << "Unable to open SPI" << std::endl; return;
         }
         vector<uint8_t> buffer(n_bytes + 1, 0);
         buffer[0] = reg | I2C_RD_BIT;
         if (wiringPiSPIDataRW(SPI_CHANNEL, buffer.data(), n_bytes + 1) < 0) {
-            std::cerr << "Error reading register "
-                << byteset(reg) << std::endl;
+            std::cerr << "Error reading register " 
+                      << byteset(reg) << std::endl;
         } else {
             std::copy(&buffer[1], &buffer[n_bytes], values);
         }
@@ -315,7 +312,7 @@ value3d MPU9250::getGyroscope() {
     return convertBytes(buffer, gyro_fs);
 }
 
-constexpr double MAG_FLUX_BASE;
+constexpr double MAG_FLUX_BASE = 4092;
 value3d MPU9250::getMagnetometer() {
     array<uint8_t, 6> buffer;
     readBlockData(EXT_SENS_DATA_00, 6, buffer.data());
