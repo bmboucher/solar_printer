@@ -4,6 +4,7 @@
 
 #include <ServoController.hpp>
 #include <ADS1115.hpp>
+#include <MPU9250.hpp>
 #include <wiringPi.h>
 
 constexpr unsigned char PAN_SERVO = 0;
@@ -24,6 +25,10 @@ Hardware::Hardware() : servoController(nullptr) {
         ADS1115::FullScaleRange::V_2048,
         ADS1115::DataRate::SPS_8,
         true);
+    
+    mpu.reset(new MPU9250());
+    mpu->setSampleRate(10);
+    mpu->setAccelDLPFConfig(MPU9250::AccelDLPFConfig::DLPF_CFG_5);
 }
 
 Hardware::~Hardware() = default;
@@ -48,4 +53,28 @@ void Hardware::setMirrorTilt(double deg) {
 
 double Hardware::getVoltage() {
     return adc ? adc->getVoltage() : 0.0;
+}
+
+namespace {
+    const value3d zero_vector = { 0,0,0 };
+}
+
+value3d Hardware::getAcceleration() {
+    if (!mpu) return zero_vector;
+    return mpu->getAcceleration();
+}
+
+value3d Hardware::getGyroscope() {
+    if (!mpu) return zero_vector;
+    return mpu->getGyroscope();
+}
+
+value3d Hardware::getMagnetometer() {
+    if (!mpu) return zero_vector;
+    return mpu->getMagnetometer();
+}
+
+double Hardware::getTemperature() {
+    if (!mpu) return 0;
+    return mpu->getTemperature();
 }
