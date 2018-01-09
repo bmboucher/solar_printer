@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <bitset>
+#include <cmath>
 
 using std::vector;
 using std::array;
@@ -204,7 +205,7 @@ namespace {
     constexpr uint8_t ACCEL_FS_SHIFT   = 3;
 
     // USER_CTRL bits
-    constexpr uint8_t FIFO_EN      = 0x40;
+    constexpr uint8_t CTRL_FIFO_EN = 0x40;
     constexpr uint8_t I2C_MST_EN   = 0x20;
     constexpr uint8_t I2C_IF_DIS   = 0x10;
     constexpr uint8_t FIFO_RST     = 0x04;
@@ -220,7 +221,7 @@ namespace {
         const uint16_t word 
             = (static_cast<uint16_t>(high_byte) << 8)
                 | static_cast<uint16_t>(low_byte);
-        const int16_t signedWord = *reinterpret_cast<int16_t*>(&word);
+        const int16_t signedWord = *reinterpret_cast<const int16_t*>(&word);
         return static_cast<double>(signedWord) / BASE_MULTIPLE;
     }
 
