@@ -18,8 +18,8 @@ int main(int argc, char* argv[]) {
     i2c::setLogging(true);
 
     while (true) {
+        getchar();
         std::cout << "V = " << hw.getVoltage() << std::endl;
-        sleep(1);
     }
     /*
     double pan = -90;
