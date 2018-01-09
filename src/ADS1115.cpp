@@ -103,13 +103,13 @@ namespace {
     }
 }
 
-uint16_t readConfig() {
+uint16_t ADS1115::readConfig() {
     return read_word_data(CONFIG) & ~OS;
 }
 
 void ADS1115::setMultiplexerConfig(MultiplexerConfig multiplexerConfig) {
     uint16_t config = readConfig();
-    applyMultiplexerConfig(config, multiplexerConfig);
+    applyMultiplexerConfig(config, static_cast<uint16_t>(multiplexerConfig));
     write_word_data(CONFIG, config);
 }
 
@@ -121,7 +121,7 @@ void ADS1115::updateFSR(double value) {
 
 void ADS1115::setFullScaleRange(FullScaleRange range) {
     uint16_t config = readConfig();
-    applyFullScaleRange(config, range);
+    applyFullScaleRange(config, static_cast<uint16_t>(range));
     write_word_data(CONFIG, config);
     updateFSR(getFSRValue(range));
 }
@@ -133,9 +133,9 @@ void ADS1115::setContinuousMode(bool value) {
     continuousMode = value;
 }
 
-void ADS1115::setDataRate(DataRate rate = DataRate::SPS_128) {
+void ADS1115::setDataRate(DataRate rate) {
     uint16_t config = readConfig();
-    applyDataRate(config, rate);
+    applyDataRate(config, static_cast<uint16_t>(rate));
     write_word_data(CONFIG, config);
 }
 
@@ -146,9 +146,9 @@ void ADS1115::setup(
     bool contMode) 
 {
     uint16_t config = readConfig();
-    applyMultiplexerConfig(config, multiplexerConfig);
-    applyFullScaleRange(config, range);
-    applyDataRate(config, rate);
+    applyMultiplexerConfig(config, static_cast<uint16_t>(multiplexerConfig));
+    applyFullScaleRange(config, static_cast<uint16_t>(range));
+    applyDataRate(config, static_cast<uint16_t>(rate));
     applyContinuousMode(config, contMode);
     write_word_data(CONFIG, config);
 
@@ -176,7 +176,7 @@ void ADS1115::setComparatorLatching(bool latching) {
 
 void ADS1115::setComparatorQueue(ComparatorQueue queue) {
     uint16_t config = readConfig();
-    applyComparatorQueue(config, queue);
+    applyComparatorQueue(config, static_cast<uint16_t>(queue));
     write_word_data(CONFIG, config);
 }
 
@@ -186,7 +186,7 @@ void ADS1115::setupComparator
 {
     uint16_t config = readConfig();
     applyComparatorMode(config, mode == ComparatorMode::WINDOW);
-    applyComparatorQueue(config, queue);
+    applyComparatorQueue(config, static_cast<uint16_t>(queue));
     applyComparatorPolarity(config, activeHigh);
     applyComparatorLatching(config, latching);
     write_word_data(CONFIG, config);
@@ -219,8 +219,10 @@ double ADS1115::getVoltage() {
 
 void ADS1115::setLowThreshold(double voltage) {
     write_word_data(LO_THRESH, convertToFixed(fsr, voltage));
+    low_thresh = voltage;
 }
 
 void ADS1115::setHighThreshold(double voltage) {
     write_word_data(HI_THRESH, convertToFixed(fsr, voltage));
+    high_thresh = voltage;
 }
