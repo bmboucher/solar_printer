@@ -182,7 +182,7 @@ void ADS1115::setComparatorQueue(ComparatorQueue queue) {
 
 void ADS1115::setupComparator
     (ComparatorMode mode, ComparatorQueue queue,
-    bool activeHigh = false, bool latching = false) 
+    bool activeHigh, bool latching) 
 {
     uint16_t config = readConfig();
     applyComparatorMode(config, mode == ComparatorMode::WINDOW);
