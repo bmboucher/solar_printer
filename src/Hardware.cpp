@@ -15,11 +15,12 @@ Hardware::Hardware() : servoController(nullptr) {
     servoController.reset(new ServoController());
 
     adc.reset(new ADS1115());
+    adc->disableComparator();
     adc->setup(
-        ADS1115::MultiplexerConfig::A3,
+        ADS1115::MultiplexerConfig::A0_MINUS_A1,
         ADS1115::FullScaleRange::V_2048,
         ADS1115::DataRate::SPS_8,
-        false);
+        true);
 }
 
 Hardware::~Hardware() = default;
