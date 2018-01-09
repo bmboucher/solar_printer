@@ -19,7 +19,8 @@ int main(int argc, char* argv[]) {
 
     while (true) {
         getchar();
-        std::cout << "V = " << hw.getVoltage() << std::endl;
+        double voltage = hw.getVoltage();
+        std::cout << "V = " << voltage << std::endl;
     }
     /*
     double pan = -90;
