@@ -9,8 +9,8 @@ ADS1115::ADS1115() : ADS1115(DEFAULT_ADDRESS) {}
 
 namespace {
     // Registers
-    constexpr unsigned char CONFIG     = 0x00;
-    constexpr unsigned char CONVERSION = 0x01;
+    constexpr unsigned char CONVERSION = 0x00;
+    constexpr unsigned char CONFIG     = 0x01;
     constexpr unsigned char LO_THRESH  = 0x02;
     constexpr unsigned char HI_THRESH  = 0x03;
 
@@ -102,7 +102,7 @@ namespace {
         return *reinterpret_cast<uint16_t*>(&intFraction);
     }
 
-    constexpr bool REVERSED = false;
+    constexpr bool REVERSED = true;
 }
 
 uint16_t ADS1115::readConfig() {
