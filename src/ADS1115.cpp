@@ -208,6 +208,7 @@ double ADS1115::getVoltage() {
         waitForConversion();
         // Start conversion by setting OS bit to 1
         write_word_data(CONFIG, config | OS, REVERSED);
+        usleep(SLEEP_US);
         waitForConversion();
     }
 
