@@ -171,7 +171,7 @@ void i2cDevice::write_bit
 uint16_t i2c::read_word_data(unsigned char addr, unsigned char reg, bool reversed) {
     if (!acquire_i2c(addr)) return 0;
     WRAP(i2c_smbus_read_word_data(file_i2c(), reg));
-    const uint16_t word = static_cast<uint16_t>(ret);
+    uint16_t word = static_cast<uint16_t>(ret);
     if (reversed) word = (word << 8) | (word >> 8);
     i2cLog(false, reg, word); return word;
 }
