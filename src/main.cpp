@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <string>
+#include <iomanip>
 
 void printVector(const std::string& tag, const value3d& vector) {
     std::cout << tag
