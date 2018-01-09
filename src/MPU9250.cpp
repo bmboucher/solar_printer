@@ -147,7 +147,8 @@ namespace {
     constexpr uint8_t AK8963_ST1        = 0x02;
     constexpr uint8_t AK8963_HXL        = 0x03; // ... AK8963_HZH
     constexpr uint8_t AK8963_ST2        = 0x09;
-    constexpr uint8_t AK8963_CNTL       = 0x0A;
+    constexpr uint8_t AK8963_CNTL1      = 0x0A;
+    constexpr uint8_t AK8963_CNTL2      = 0x0B;
     constexpr uint8_t AK8963_ASTC       = 0x0C;
     constexpr uint8_t AK8963_I2CDIS     = 0x0F;
     constexpr uint8_t AK8963_ASAX       = 0x10; // ... AK8963_ASAZ
@@ -234,6 +235,18 @@ namespace {
         }
         return std::move(values);
     }
+
+    void readMagnetometerSensitivity(value3d& mag_sa) {
+        uint8_t reg = AK8963_ASAX;
+        for (size_t i = 0; i < 3; i++) {
+            const uint8_t adj = readMagnetometerRegister(reg);
+            const double adj_d = static_cast<double>(adj);
+            mag_sa[i] = (((adj_d - 128) * 0.5) / 128) + 1;
+            reg++;
+        }
+    }
+
+    constexpr uint8_t MAG_16BIT = 0x10;
 }
 
 MPU9250::MPU9250() 
@@ -243,7 +256,10 @@ MPU9250::MPU9250()
     if (spi() < 0) {
         std::cerr << "Unable to open SPI" << std::endl; return;
     }
+    for (size_t i = 0; i < 3; i++) mag_sa[i] = 1.0;
     writeRegister(USER_CTRL, I2C_IF_DIS | SIG_COND_RST);
+    readMagnetometerSensitivity(mag_sa);
+    setMagnetometerDataRate();
     setupMagnetometerPolling();
 }
 
@@ -317,5 +333,14 @@ constexpr double MAG_FLUX_BASE = 4092;
 value3d MPU9250::getMagnetometer() {
     array<uint8_t, 6> buffer;
     readBlockData(EXT_SENS_DATA_00, 6, buffer.data());
-    return convertBytes(buffer, MAG_FLUX_BASE);
+    value3d mag = convertBytes(buffer, MAG_FLUX_BASE);
+    for (size_t i = 0; i < 3; i++) {
+        mag[i] *= mag_sa[i];
+    }
+    return std::move(mag);
+}
+
+void MPU9250::setMagnetometerDataRate(MagnetometerDataRate rate) {
+    uint8_t cntl = MAG_16BIT | static_cast<uint8_t>(rate);
+    writeMagnetometerRegister(AK8963_CNTL1, cntl);
 }

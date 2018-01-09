@@ -9,6 +9,7 @@ class MPU9250 {
 private:
     double gyro_fs;
     double accel_fs;
+    value3d mag_sa;
 
 public:
     MPU9250();
@@ -62,4 +63,11 @@ public:
     value3d getGyroscope();
 
     value3d getMagnetometer();
+
+    enum class MagnetometerDataRate : uint8_t {
+        HZ_8   = 0x02,
+        HZ_100 = 0x06
+    };
+    void setMagnetometerDataRate
+        (MagnetometerDataRate rate = MagnetometerDataRate::HZ_8);
 };
