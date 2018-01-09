@@ -2,6 +2,14 @@
 #include <i2c.hpp>
 #include <unistd.h>
 #include <iostream>
+#include <string>
+
+void printVector(const std::string& tag, const value3d& vector) {
+    std::cout << tag
+              << "   X:" << std::setprecision(6) << vector[0]
+              << "   Y:" << std::setprecision(6) << vector[1]
+              << "   Z:" << std::setprecision(6) << vector[2] << std::endl;
+}
 
 void setMirrorPositionManually(Hardware& hw) {
     double pan{ 0 }, tilt{ 0 };
@@ -11,6 +19,9 @@ void setMirrorPositionManually(Hardware& hw) {
     std::cin >> tilt;
     hw.setMirrorPan(pan);
     hw.setMirrorTilt(tilt);
+
+    printVector("ACCELER", hw.getAcceleration());
+    printVector("COMPASS", hw.getMagnetometer());
 }
 
 int main(int argc, char* argv[]) {   
