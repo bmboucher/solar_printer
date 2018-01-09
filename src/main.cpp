@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     Hardware hw;
 
     while (true) {
-        std::cout << "V = " << hw.getVoltage();
+        std::cout << "V = " << hw.getVoltage() << std::endl;
         sleep(1);
     }
     /*
