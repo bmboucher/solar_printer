@@ -15,9 +15,9 @@ void write_byte_data
 void write_bit
     (unsigned char addr, unsigned char reg, unsigned char bitmask, bool value);
 uint16_t read_word_data
-    (unsigned char addr, unsigned char reg);
+    (unsigned char addr, unsigned char reg, bool reversed = false);
 void write_word_data
-    (unsigned char addr, unsigned char reg, uint16_t value);
+    (unsigned char addr, unsigned char reg, uint16_t value, bool reversed = false);
 uint16_t process_call
     (unsigned char addr, unsigned char reg, uint16_t value);
 unsigned char read_block_data
@@ -46,8 +46,8 @@ public:
     bool read_bit(unsigned char reg, unsigned char bitmask);
     void write_byte_data(unsigned char reg, unsigned char value);
     void write_bit(unsigned char reg, unsigned char bitmask, bool value);
-    uint16_t read_word_data(unsigned char reg);
-    void write_word_data(unsigned char reg, uint16_t value);
+    uint16_t read_word_data(unsigned char reg, bool reversed = false);
+    void write_word_data(unsigned char reg, uint16_t value, bool reversed = false);
     uint16_t process_call(unsigned char reg, uint16_t value);
     unsigned char read_block_data
         (unsigned char reg, unsigned char length, unsigned char* buffer);

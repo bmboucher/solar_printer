@@ -168,26 +168,30 @@ void i2cDevice::write_bit
 }
 
 // Read word from register
-uint16_t i2c::read_word_data(unsigned char addr, unsigned char reg) {
+uint16_t i2c::read_word_data(unsigned char addr, unsigned char reg, bool reversed) {
     if (!acquire_i2c(addr)) return 0;
-    WRAP(i2c_smbus_read_word_data(file_i2c(), reg));
+    WRAP(reversed 
+            ? i2c_smbus_read_word_swapped(file_i2c(), reg) 
+            : i2c_smbus_read_word_data(file_i2c(), reg));
     const uint16_t word = static_cast<uint16_t>(ret);
     i2cLog(false, reg, word); return word;
 }
-uint16_t i2cDevice::read_word_data(unsigned char reg) {
-    return i2c::read_word_data(address, reg);
+uint16_t i2cDevice::read_word_data(unsigned char reg, bool reversed) {
+    return i2c::read_word_data(address, reg, reversed);
 }
 
 // Write word to register
 void i2c::write_word_data
-    (unsigned char addr, unsigned char reg, uint16_t value) 
+    (unsigned char addr, unsigned char reg, uint16_t value, bool reversed) 
 {
     if (!acquire_i2c(addr)) return;
-    WRAP(i2c_smbus_write_word_data(file_i2c(), reg, value));
+    WRAP(reversed
+            ? i2c_smbus_write_word_swapped(file_i2c(), reg, value)
+            : i2c_smbus_write_word_data(file_i2c(), reg, value));
     i2cLog(true, reg, value);
 }
-void i2cDevice::write_word_data(unsigned char reg, uint16_t value) {
-    i2c::write_word_data(address, reg, value);
+void i2cDevice::write_word_data(unsigned char reg, uint16_t value, bool reversed) {
+    i2c::write_word_data(address, reg, value, reversed);
 }
 
 // Write word to register, then read register back out

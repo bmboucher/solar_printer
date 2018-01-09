@@ -104,13 +104,13 @@ namespace {
 }
 
 uint16_t ADS1115::readConfig() {
-    return read_word_data(CONFIG) & ~OS;
+    return read_word_data(CONFIG, true) & ~OS;
 }
 
 void ADS1115::setMultiplexerConfig(MultiplexerConfig multiplexerConfig) {
     uint16_t config = readConfig();
     applyMultiplexerConfig(config, static_cast<uint16_t>(multiplexerConfig));
-    write_word_data(CONFIG, config);
+    write_word_data(CONFIG, config, true);
 }
 
 void ADS1115::updateFSR(double value) {
@@ -122,21 +122,21 @@ void ADS1115::updateFSR(double value) {
 void ADS1115::setFullScaleRange(FullScaleRange range) {
     uint16_t config = readConfig();
     applyFullScaleRange(config, static_cast<uint16_t>(range));
-    write_word_data(CONFIG, config);
+    write_word_data(CONFIG, config, true);
     updateFSR(getFSRValue(range));
 }
 
 void ADS1115::setContinuousMode(bool value) {
     uint16_t config = readConfig();
     applyContinuousMode(config, value);
-    write_word_data(CONFIG, config);
+    write_word_data(CONFIG, config, true);
     continuousMode = value;
 }
 
 void ADS1115::setDataRate(DataRate rate) {
     uint16_t config = readConfig();
     applyDataRate(config, static_cast<uint16_t>(rate));
-    write_word_data(CONFIG, config);
+    write_word_data(CONFIG, config, true);
 }
 
 void ADS1115::setup(
@@ -150,7 +150,7 @@ void ADS1115::setup(
     applyFullScaleRange(config, static_cast<uint16_t>(range));
     applyDataRate(config, static_cast<uint16_t>(rate));
     applyContinuousMode(config, contMode);
-    write_word_data(CONFIG, config);
+    write_word_data(CONFIG, config, true);
 
     updateFSR(getFSRValue(range));
     continuousMode = contMode;
@@ -159,25 +159,25 @@ void ADS1115::setup(
 void ADS1115::setComparatorMode(ComparatorMode mode) {
     uint16_t config = readConfig();
     applyComparatorMode(config, mode == ComparatorMode::WINDOW);
-    write_word_data(CONFIG, config);
+    write_word_data(CONFIG, config, true);
 }
 
 void ADS1115::setComparatorPolarity(bool activeHigh) {
     uint16_t config = readConfig();
     applyComparatorPolarity(config, activeHigh);
-    write_word_data(CONFIG, config);
+    write_word_data(CONFIG, config, true);
 }
 
 void ADS1115::setComparatorLatching(bool latching) {
     uint16_t config = readConfig();
     applyComparatorLatching(config, latching);
-    write_word_data(CONFIG, config);
+    write_word_data(CONFIG, config, true);
 }
 
 void ADS1115::setComparatorQueue(ComparatorQueue queue) {
     uint16_t config = readConfig();
     applyComparatorQueue(config, static_cast<uint16_t>(queue));
-    write_word_data(CONFIG, config);
+    write_word_data(CONFIG, config, true);
 }
 
 void ADS1115::setupComparator
@@ -189,23 +189,23 @@ void ADS1115::setupComparator
     applyComparatorQueue(config, static_cast<uint16_t>(queue));
     applyComparatorPolarity(config, activeHigh);
     applyComparatorLatching(config, latching);
-    write_word_data(CONFIG, config);
+    write_word_data(CONFIG, config, true);
 }
 
 double ADS1115::getVoltage() {
     if (!continuousMode) {
         uint16_t config{ 0 };
         auto waitForConversion = [this, &config]() {
-            config = read_word_data(CONFIG);
+            config = read_word_data(CONFIG, true);
             while (config & OS == 0) {
                 usleep(SLEEP_US);
-                config = read_word_data(CONFIG);
+                config = read_word_data(CONFIG, true);
             }
         };
 
         waitForConversion();
         // Start conversion by setting OS bit to 1
-        write_word_data(CONFIG, config | OS);
+        write_word_data(CONFIG, config | OS, true);
         waitForConversion();
     }
 
@@ -218,11 +218,11 @@ double ADS1115::getVoltage() {
 }
 
 void ADS1115::setLowThreshold(double voltage) {
-    write_word_data(LO_THRESH, convertToFixed(fsr, voltage));
+    write_word_data(LO_THRESH, convertToFixed(fsr, voltage), true);
     low_thresh = voltage;
 }
 
 void ADS1115::setHighThreshold(double voltage) {
-    write_word_data(HI_THRESH, convertToFixed(fsr, voltage));
+    write_word_data(HI_THRESH, convertToFixed(fsr, voltage), true);
     high_thresh = voltage;
 }
