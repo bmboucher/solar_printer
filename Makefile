@@ -1,5 +1,5 @@
 CXX := g++
-CFLAGS := -std=c++11 -Iinc -pthread
+CFLAGS := -std=c++11 -Iinc -pthread -lwiringPi
 
 HDRS := $(shell find inc -name '*.hpp')
 SRCS := $(shell find src -name '*.cpp')

@@ -4,6 +4,7 @@
 
 #include <ServoController.hpp>
 #include <ADS1115.hpp>
+#include <wiringPi.h>
 
 constexpr unsigned char PAN_SERVO = 0;
 constexpr double PAN_SERVO_PHASE = 0;
@@ -12,6 +13,8 @@ constexpr double TILT_SERVO_PHASE = 0.5;
 
 Hardware::Hardware() : servoController(nullptr) {
     i2c::softwareReset();
+    wiringPiSetup();
+
     servoController.reset(new ServoController());
 
     adc.reset(new ADS1115());
