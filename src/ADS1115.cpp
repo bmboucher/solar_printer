@@ -101,6 +101,8 @@ namespace {
         int16_t intFraction = static_cast<int16_t>(fraction);
         return *reinterpret_cast<uint16_t*>(&intFraction);
     }
+
+    constexpr bool REVERSED = false;
 }
 
 uint16_t ADS1115::readConfig() {
@@ -110,7 +112,7 @@ uint16_t ADS1115::readConfig() {
 void ADS1115::setMultiplexerConfig(MultiplexerConfig multiplexerConfig) {
     uint16_t config = readConfig();
     applyMultiplexerConfig(config, static_cast<uint16_t>(multiplexerConfig));
-    write_word_data(CONFIG, config, true);
+    write_word_data(CONFIG, config, REVERSED);
 }
 
 void ADS1115::updateFSR(double value) {
@@ -122,21 +124,21 @@ void ADS1115::updateFSR(double value) {
 void ADS1115::setFullScaleRange(FullScaleRange range) {
     uint16_t config = readConfig();
     applyFullScaleRange(config, static_cast<uint16_t>(range));
-    write_word_data(CONFIG, config, true);
+    write_word_data(CONFIG, config, REVERSED);
     updateFSR(getFSRValue(range));
 }
 
 void ADS1115::setContinuousMode(bool value) {
     uint16_t config = readConfig();
     applyContinuousMode(config, value);
-    write_word_data(CONFIG, config, true);
+    write_word_data(CONFIG, config, REVERSED);
     continuousMode = value;
 }
 
 void ADS1115::setDataRate(DataRate rate) {
     uint16_t config = readConfig();
     applyDataRate(config, static_cast<uint16_t>(rate));
-    write_word_data(CONFIG, config, true);
+    write_word_data(CONFIG, config, REVERSED);
 }
 
 void ADS1115::setup(
@@ -150,7 +152,7 @@ void ADS1115::setup(
     applyFullScaleRange(config, static_cast<uint16_t>(range));
     applyDataRate(config, static_cast<uint16_t>(rate));
     applyContinuousMode(config, contMode);
-    write_word_data(CONFIG, config, true);
+    write_word_data(CONFIG, config, REVERSED);
 
     updateFSR(getFSRValue(range));
     continuousMode = contMode;
@@ -159,25 +161,25 @@ void ADS1115::setup(
 void ADS1115::setComparatorMode(ComparatorMode mode) {
     uint16_t config = readConfig();
     applyComparatorMode(config, mode == ComparatorMode::WINDOW);
-    write_word_data(CONFIG, config, true);
+    write_word_data(CONFIG, config, REVERSED);
 }
 
 void ADS1115::setComparatorPolarity(bool activeHigh) {
     uint16_t config = readConfig();
     applyComparatorPolarity(config, activeHigh);
-    write_word_data(CONFIG, config, true);
+    write_word_data(CONFIG, config, REVERSED);
 }
 
 void ADS1115::setComparatorLatching(bool latching) {
     uint16_t config = readConfig();
     applyComparatorLatching(config, latching);
-    write_word_data(CONFIG, config, true);
+    write_word_data(CONFIG, config, REVERSED);
 }
 
 void ADS1115::setComparatorQueue(ComparatorQueue queue) {
     uint16_t config = readConfig();
     applyComparatorQueue(config, static_cast<uint16_t>(queue));
-    write_word_data(CONFIG, config, true);
+    write_word_data(CONFIG, config, REVERSED);
 }
 
 void ADS1115::setupComparator
@@ -189,27 +191,27 @@ void ADS1115::setupComparator
     applyComparatorQueue(config, static_cast<uint16_t>(queue));
     applyComparatorPolarity(config, activeHigh);
     applyComparatorLatching(config, latching);
-    write_word_data(CONFIG, config, true);
+    write_word_data(CONFIG, config, REVERSED);
 }
 
 double ADS1115::getVoltage() {
     if (!continuousMode) {
         uint16_t config{ 0 };
         auto waitForConversion = [this, &config]() {
-            config = read_word_data(CONFIG, true);
+            config = read_word_data(CONFIG, REVERSED);
             while (config & OS == 0) {
                 usleep(SLEEP_US);
-                config = read_word_data(CONFIG, true);
+                config = read_word_data(CONFIG, REVERSED);
             }
         };
 
         waitForConversion();
         // Start conversion by setting OS bit to 1
-        write_word_data(CONFIG, config | OS, true);
+        write_word_data(CONFIG, config | OS, REVERSED);
         waitForConversion();
     }
 
-    uint16_t value = read_word_data(CONVERSION);
+    uint16_t value = read_word_data(CONVERSION, REVERSED);
     if (value == MIN_FRACTION) return -fsr;
     if (value == MAX_FRACTION) return fsr * ONE_MINUS_EPSILON;
     int16_t signedValue = *reinterpret_cast<int16_t*>(&value);
@@ -218,11 +220,11 @@ double ADS1115::getVoltage() {
 }
 
 void ADS1115::setLowThreshold(double voltage) {
-    write_word_data(LO_THRESH, convertToFixed(fsr, voltage), true);
+    write_word_data(LO_THRESH, convertToFixed(fsr, voltage), REVERSED);
     low_thresh = voltage;
 }
 
 void ADS1115::setHighThreshold(double voltage) {
-    write_word_data(HI_THRESH, convertToFixed(fsr, voltage), true);
+    write_word_data(HI_THRESH, convertToFixed(fsr, voltage), REVERSED);
     high_thresh = voltage;
 }

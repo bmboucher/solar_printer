@@ -19,7 +19,7 @@ Hardware::Hardware() : servoController(nullptr) {
         ADS1115::MultiplexerConfig::A3,
         ADS1115::FullScaleRange::V_2048,
         ADS1115::DataRate::SPS_8,
-        true);
+        false);
 }
 
 Hardware::~Hardware() = default;
