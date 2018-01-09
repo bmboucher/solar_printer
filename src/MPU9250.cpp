@@ -257,7 +257,7 @@ MPU9250::MPU9250()
         std::cerr << "Unable to open SPI" << std::endl; return;
     }
     for (size_t i = 0; i < 3; i++) mag_sa[i] = 1.0;
-    writeRegister(USER_CTRL, I2C_IF_DIS | SIG_COND_RST);
+    writeRegister(USER_CTRL, I2C_MST_EN | I2C_IF_DIS | I2C_MST_RST | SIG_COND_RST);
     readMagnetometerSensitivity(mag_sa);
     setMagnetometerDataRate();
     setupMagnetometerPolling();
@@ -343,4 +343,14 @@ value3d MPU9250::getMagnetometer() {
 void MPU9250::setMagnetometerDataRate(MagnetometerDataRate rate) {
     uint8_t cntl = MAG_16BIT | static_cast<uint8_t>(rate);
     writeMagnetometerRegister(AK8963_CNTL1, cntl);
+}
+
+constexpr uint8_t DISABLE_A = 0x38; // 00111000
+void MPU9250::disableAccelerometer() {
+    setRegisterBit(PWR_MGMT_2, DISABLE_A, true);
+}
+
+constexpr uint8_t DISABLE_G = 0x07; // 00000111
+void MPU9250::disableGyroscope() {
+    setRegisterBit(PWR_MGMT_2, DISABLE_G, true);
 }

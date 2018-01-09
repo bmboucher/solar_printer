@@ -24,7 +24,6 @@ public:
     double getVoltage();
     
     value3d getAcceleration();
-    value3d getGyroscope();
     value3d getMagnetometer();
     double getTemperature();
 };

@@ -70,4 +70,7 @@ public:
     };
     void setMagnetometerDataRate
         (MagnetometerDataRate rate = MagnetometerDataRate::HZ_8);
+
+    void disableAccelerometer();
+    void disableGyroscope();
 };

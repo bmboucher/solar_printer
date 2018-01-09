@@ -29,6 +29,7 @@ Hardware::Hardware() : servoController(nullptr) {
     mpu.reset(new MPU9250());
     mpu->setSampleRate(10);
     mpu->setAccelDLPFConfig(MPU9250::AccelDLPFConfig::DLPF_CFG_5);
+    mpu->disableGyroscope();
 }
 
 Hardware::~Hardware() = default;
@@ -62,11 +63,6 @@ namespace {
 value3d Hardware::getAcceleration() {
     if (!mpu) return zero_vector;
     return mpu->getAcceleration();
-}
-
-value3d Hardware::getGyroscope() {
-    if (!mpu) return zero_vector;
-    return mpu->getGyroscope();
 }
 
 value3d Hardware::getMagnetometer() {
