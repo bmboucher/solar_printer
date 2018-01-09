@@ -32,6 +32,9 @@ int main(int argc, char* argv[]) {
         getchar();
         double voltage = hw.getVoltage();
         std::cout << "V = " << voltage << std::endl;
+
+        getchar();
+        setMirrorPositionManually(hw);
     }
     /*
     double pan = -90;
