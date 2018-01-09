@@ -14,7 +14,7 @@ void setMirrorPositionManually(Hardware& hw) {
 }
 
 int main(int argc, char* argv[]) {   
-    i2c::setLogging(true);
+    //i2c::setLogging(true);
     Hardware hw;
 
     while (true) {
