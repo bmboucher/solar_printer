@@ -184,8 +184,8 @@ void i2c::write_word_data
     (unsigned char addr, unsigned char reg, uint16_t value, bool reversed) 
 {
     if (!acquire_i2c(addr)) return;
-    if (reversed) value = (value << 8) | (value >> 8);
-    WRAP(i2c_smbus_write_word_data(file_i2c(), reg, value));
+    const uint16_t wr_value = reversed ? ((value << 8) | (value >> 8)) : value;
+    WRAP(i2c_smbus_write_word_data(file_i2c(), reg, wr_value));
     i2cLog(true, reg, value);
 }
 void i2cDevice::write_word_data(unsigned char reg, uint16_t value, bool reversed) {
