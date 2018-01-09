@@ -14,6 +14,12 @@ void setMirrorPositionManually(Hardware& hw) {
 
 int main(int argc, char* argv[]) {   
     Hardware hw;
+
+    while (true) {
+        std::cout << "V = " << hw.getVoltage();
+        sleep(1);
+    }
+    /*
     double pan = -90;
     double inc = 0.5;
     hw.setMirrorTilt(45);
@@ -25,7 +31,6 @@ int main(int argc, char* argv[]) {
         pan += inc;
         if (pan >= 90 || pan <= -90) inc = -inc;
         usleep(250000);
-        /*
         for (double tilt = 0; tilt < 90; tilt += 10) {
             hw.setMirrorTilt(tilt);
             usleep(250000);
@@ -34,6 +39,6 @@ int main(int argc, char* argv[]) {
             hw.setMirrorTilt(tilt);
             usleep(250000);
         }
-        */
     }
+    */
 }
