@@ -63,7 +63,7 @@ namespace {
     }
 
     void applyContinuousMode(uint16_t& config, bool value) {
-        setWordBit(config, MODE_BIT, value);
+        setWordBit(config, MODE_BIT, !value);
     }
 
     void applyComparatorMode(uint16_t& config, bool window) {
