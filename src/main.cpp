@@ -1,4 +1,5 @@
 #include <Hardware.hpp>
+#include <i2c.hpp>
 #include <unistd.h>
 #include <iostream>
 
@@ -14,6 +15,7 @@ void setMirrorPositionManually(Hardware& hw) {
 
 int main(int argc, char* argv[]) {   
     Hardware hw;
+    i2c::setLogging(true);
 
     while (true) {
         std::cout << "V = " << hw.getVoltage() << std::endl;
