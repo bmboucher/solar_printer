@@ -129,7 +129,9 @@ double Hardware::getTemperature() {
 
 void Hardware::buttonPressL() {
     bool EXPECTED = false;
-    buttonL.compare_exchange_strong(EXPECTED, true);
+    if (buttonL.compare_exchange_strong(EXPECTED, true)) {
+        std::cout << "Button L pressed" << std::endl;
+    }
 }
 
 void Hardware::buttonPressR() {
@@ -148,6 +150,6 @@ void Hardware::calibratePan() {
         if (pos > 1) pos = 1;
         pos = (1 + pos) / 2;
         servoController->setServoPosition(PAN_SERVO, PAN_SERVO_PHASE, pos);
-        if (buttonL.compare_exchange_strong(BUTTON_EXPECTED, false)) break;
+        //if (buttonL.compare_exchange_strong(BUTTON_EXPECTED, false)) break;
     }
 }
