@@ -87,7 +87,12 @@ void Hardware::setMirrorPan(double deg) {
     if (deg < -90 || deg > 90) {
         std::cerr << "Invalid pan angle " << deg << std::endl; return;
     }
-    const double pos = (deg + 90) / 180;
+    double pos = panZero;
+    if (deg < 0) {
+        pos = panMinus90 + (panZero - panMinus90) * (deg + 90) / 90;
+    } else {
+        pos = panZero + (panPlus90 - panZero) * (deg / 90);
+    }
     servoController->setServoPosition(PAN_SERVO, PAN_SERVO_PHASE, pos);
 }
 
@@ -96,7 +101,7 @@ void Hardware::setMirrorTilt(double deg) {
     if (deg < 0 || deg > 90) {
         std::cerr << "Invalid tilt angle " << deg << std::endl; return;
     }
-    const double pos = (deg + 90) / 180;
+    const double pos = tiltZero + (tilt90 - tiltZero) * (deg / 90);
     servoController->setServoPosition(TILT_SERVO, TILT_SERVO_PHASE, pos);
 }
 
@@ -142,16 +147,38 @@ void Hardware::buttonPressR() {
 void Hardware::calibratePan() {
     switchAdcInput(adc, adcPotInput, true);
     setMirrorTilt(90);
-    buttonL.store(false);
-    while (true) {
-        double potV = getPotentiometerVoltage();
-        double pos = potV / POT_V_RANGE;
-        if (pos < -1) pos = -1;
-        if (pos > 1) pos = 1;
-        pos = (1 + pos) / 2;
-        servoController->setServoPosition(PAN_SERVO, PAN_SERVO_PHASE, pos);
-        bool BUTTON_EXPECTED{ true };
-        if (buttonL.compare_exchange_weak(BUTTON_EXPECTED, false)) break;
-    }
     setMirrorPan(0);
+    const std::chrono::duration<size_t, std::milli> SETUP_TIME(1000);
+    std::this_thread::sleep_for(SETUP_TIME);
+    gpioWrite(LED_PIN, 1);
+
+    auto calibratePosition = [this]() -> double
+    {
+        buttonL.store(false);
+        while (true) {
+            double potV = getPotentiometerVoltage();
+            double pos = potV / POT_V_RANGE;
+            if (pos < -1) pos = -1;
+            if (pos > 1) pos = 1;
+            pos = (1 + pos) / 2;
+            servoController->setServoPosition(PAN_SERVO, PAN_SERVO_PHASE, pos);
+            bool BUTTON_EXPECTED{ true };
+            if (buttonL.compare_exchange_weak(BUTTON_EXPECTED, false)) break;
+        }
+        double position = servoController->getServoPosition(PAN_SERVO);
+        std::cout << "Position = " << position << std::endl;
+        return position;
+    };
+
+    std::cout << "Use pot to set position to -90" << std::endl;
+    panMinus90 = calibratePosition();
+    
+    std::cout << "Use pot to set position to 0" << std::endl;
+    panZero = calibratePosition();
+
+    std::cout << "Use pot to set position to +90" << std::endl;
+    panPlus90 = calibratePosition();
+
+    setMirrorPan(0);
+    gpioWrite(LED_PIN, 0);
 }

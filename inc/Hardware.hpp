@@ -11,6 +11,12 @@ class MPU9250;
 
 class Hardware {
 private:
+    double panMinus90{ 0 };
+    double panZero{ 0.5 };
+    double panPlus90{ 1 };
+    double tiltZero{ 0.5 };
+    double tilt90{ 1 };
+
     bool adcPotInput{ false };
     std::atomic_bool buttonL{ false };
     std::atomic_bool buttonR{ false };
