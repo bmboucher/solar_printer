@@ -149,7 +149,7 @@ void Hardware::calibratePan() {
         pos = (1 + pos) / 2;
         servoController->setServoPosition(PAN_SERVO, PAN_SERVO_PHASE, pos);
         bool BUTTON_EXPECTED{ true };
-        if (buttonL.compare_exchange_strong(BUTTON_EXPECTED, false)) break;
+        if (buttonL.compare_exchange_weak(BUTTON_EXPECTED, false)) break;
     }
     setMirrorPan(0);
 }
