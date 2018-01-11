@@ -43,5 +43,6 @@ public:
     void buttonPressL();
     void buttonPressR();
 
+    void calibrateTilt();
     void calibratePan();
 };

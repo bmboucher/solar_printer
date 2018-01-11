@@ -144,7 +144,32 @@ void Hardware::buttonPressR() {
     buttonR.compare_exchange_strong(EXPECTED, true);
 }
 
-void Hardware::calibratePan() {
+namespace {
+    double calibratePosition_(
+            std::unique_ptr<ADS1115>& adc,
+            std::unique_ptr<ServoController>& servoController,
+            const uint8_t servo, const double phase,
+            std::atomic_bool& buttonL) {
+        buttonL.store(false);
+        while (true) {
+            double potV = adc->getVoltage();
+            double pos = potV / POT_V_RANGE;
+            if (pos < -1) pos = -1;
+            if (pos > 1) pos = 1;
+            pos = (1 + pos) / 2;
+            servoController->setServoPosition(servo, phase, pos);
+            bool BUTTON_EXPECTED{ true };
+            if (buttonL.compare_exchange_weak(BUTTON_EXPECTED, false)) {
+                double position = servoController->getServoPosition(servo);
+                std::cout << "Position = " << position << std::endl;
+                return position;
+            }
+        }
+    }
+}
+
+void Hardware::calibrateTilt() {
+    std::cout << "TILT CALIBRATION" << std::endl << std::endl;
     switchAdcInput(adc, adcPotInput, true);
     setMirrorTilt(90);
     setMirrorPan(0);
@@ -154,21 +179,35 @@ void Hardware::calibratePan() {
 
     auto calibratePosition = [this]() -> double
     {
-        buttonL.store(false);
-        while (true) {
-            double potV = getPotentiometerVoltage();
-            double pos = potV / POT_V_RANGE;
-            if (pos < -1) pos = -1;
-            if (pos > 1) pos = 1;
-            pos = (1 + pos) / 2;
-            servoController->setServoPosition(PAN_SERVO, PAN_SERVO_PHASE, pos);
-            bool BUTTON_EXPECTED{ true };
-            if (buttonL.compare_exchange_weak(BUTTON_EXPECTED, false)) {
-                double position = servoController->getServoPosition(PAN_SERVO);
-                std::cout << "Position = " << position << std::endl;
-                return position;
-            }
-        }
+        return calibratePosition_(
+            adc, servoController, TILT_SERVO, TILT_SERVO_PHASE, buttonL);
+    };
+
+    std::cout << "Use pot to set position to 0" << std::endl;
+    tiltZero = calibratePosition();
+
+    std::cout << "Use pot to set position to 90" << std::endl;
+    tilt90 = calibratePosition();
+
+    setMirrorTilt(90);
+    gpioWrite(LED_PIN, 0);
+    std::cout << "TILT CALIBRATION COMPLETE" << std::endl << std::endl;
+}
+
+void Hardware::calibratePan() {
+    std::cout << "PAN CALIBRATION" << std::endl << std::endl;
+
+    switchAdcInput(adc, adcPotInput, true);
+    setMirrorTilt(90);
+    setMirrorPan(0);
+    const std::chrono::duration<size_t, std::milli> SETUP_TIME(1000);
+    std::this_thread::sleep_for(SETUP_TIME);
+    gpioWrite(LED_PIN, 1);
+
+    auto calibratePosition = [this]() -> double
+    {
+        return calibratePosition_(
+            adc, servoController, PAN_SERVO, PAN_SERVO_PHASE, buttonL);
     };
 
     std::cout << "Use pot to set position to -90" << std::endl;
@@ -182,4 +221,6 @@ void Hardware::calibratePan() {
 
     setMirrorPan(0);
     gpioWrite(LED_PIN, 0);
+
+    std::cout << "PAN CALIBRATION COMPLETE" << std::endl << std::endl;
 }

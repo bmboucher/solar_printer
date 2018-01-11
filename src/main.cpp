@@ -29,6 +29,7 @@ void setMirrorPositionManually(Hardware& hw) {
 int main(int argc, char* argv[]) {   
     //i2c::setLogging(true);
     Hardware hw;
+    hw.calibrateTilt();
     hw.calibratePan();
     /*
     while (true) {
