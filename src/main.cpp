@@ -21,7 +21,7 @@ void setMirrorPositionManually(Hardware& hw) {
     hw.setMirrorPan(pan);
     hw.setMirrorTilt(tilt);
 
-    sleep(1);
+    sleep(5);
     printVector("ACCELER", hw.getAcceleration());
     printVector("COMPASS", hw.getMagnetometer());
 }
