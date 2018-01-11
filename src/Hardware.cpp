@@ -141,6 +141,7 @@ void Hardware::calibratePan() {
     switchAdcInput(adc, adcPotInput, true);
     setMirrorTilt(90);
     bool BUTTON_EXPECTED = true;
+    buttonL.store(false);
     while (true) {
         double potV = getPotentiometerVoltage();
         double pos = potV / POT_V_RANGE;
