@@ -9,6 +9,7 @@
 #include <pigpio.h>
 #include <thread>
 #include <chrono>
+#include <cmath>
 
 namespace {
     constexpr unsigned char PAN_SERVO = 0;
@@ -223,4 +224,37 @@ void Hardware::calibratePan() {
     gpioWrite(LED_PIN, 0);
 
     std::cout << "PAN CALIBRATION COMPLETE" << std::endl << std::endl;
+}
+
+constexpr double FIGURE_EIGHT_MIN_TILT = 30;
+constexpr double FIGURE_EIGHT_MAX_TILT = 80;
+constexpr double FIGURE_EIGHT_PAN = 75;
+void Hardware::figureEight() {
+    // x^4 = a^2 * (x^2 - b * y^2)
+    const double y_offset 
+        = (FIGURE_EIGHT_MIN_TILT + FIGURE_EIGHT_MAX_TILT) / 2;
+    const double y_semimajor
+        = FIGURE_EIGHT_MAX_TILT - y_offset;
+    const double a = FIGURE_EIGHT_PAN;
+    const double b = pow(a / (2 * y_semimajor), 2);
+
+    const std::chrono::duration<size_t, std::milli> t_step(10);
+    double x_step = 1;
+    double y_sign = 1;
+    double x = -a;
+    buttonL.store(false);
+    while (true) {
+        y = y_sign * sqr((pow(x, 2) - pow(x, 4) / pow(a, 2)) / b);
+        setMirrorPan(x);
+        setMirrorTilt(y + y_offset);
+        std::this_thread::sleep_for(t_step);
+
+        x += x_step;
+        if (x + x_step > a || x + x_step < -a) 
+            { x_step *= -1; y_sign *= -1; }
+        if (x * (x + x_step) <= 0) { y_sign *= -1; }
+
+        bool BUTTON_EXPECTED{ true };
+        if (buttonL.compare_exchange_weak(BUTTON_EXPECTED, false)) return;
+    }
 }

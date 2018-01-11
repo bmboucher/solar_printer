@@ -45,4 +45,5 @@ public:
 
     void calibrateTilt();
     void calibratePan();
+    void figureEight();
 };

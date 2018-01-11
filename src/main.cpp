@@ -31,6 +31,7 @@ int main(int argc, char* argv[]) {
     Hardware hw;
     hw.calibrateTilt();
     hw.calibratePan();
+    hw.figureEight();
     /*
     while (true) {
         getchar();
