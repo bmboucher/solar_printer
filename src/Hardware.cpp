@@ -59,6 +59,8 @@ Hardware::Hardware() : servoController(nullptr) {
     gpioSetMode(LED_PIN, PI_OUTPUT);
     gpioSetMode(L_BUTTON_PIN, PI_INPUT);
     gpioSetMode(R_BUTTON_PIN, PI_INPUT);
+    gpioSetPullUpDown(L_BUTTON_PIN, PI_PUD_DOWN);
+    gpioSetPullUpDown(R_BUTTON_PIN, PI_PUD_DOWN);
     gpioSetAlertFuncEx(L_BUTTON_PIN, &buttonPressL_, this);
     gpioSetAlertFuncEx(R_BUTTON_PIN, &buttonPressR_, this);
 
