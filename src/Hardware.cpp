@@ -163,11 +163,12 @@ void Hardware::calibratePan() {
             pos = (1 + pos) / 2;
             servoController->setServoPosition(PAN_SERVO, PAN_SERVO_PHASE, pos);
             bool BUTTON_EXPECTED{ true };
-            if (buttonL.compare_exchange_weak(BUTTON_EXPECTED, false)) break;
+            if (buttonL.compare_exchange_weak(BUTTON_EXPECTED, false)) {
+                double position = servoController->getServoPosition(PAN_SERVO);
+                std::cout << "Position = " << position << std::endl;
+                return position;
+            }
         }
-        double position = servoController->getServoPosition(PAN_SERVO);
-        std::cout << "Position = " << position << std::endl;
-        return position;
     };
 
     std::cout << "Use pot to set position to -90" << std::endl;
