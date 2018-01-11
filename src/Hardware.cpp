@@ -6,6 +6,7 @@
 #include <ADS1115.hpp>
 #include <MPU9250.hpp>
 #include <wiringPi.h>
+#include <pigpio.h>
 
 constexpr unsigned char PAN_SERVO = 0;
 constexpr double PAN_SERVO_PHASE = 0;
@@ -15,6 +16,7 @@ constexpr double TILT_SERVO_PHASE = 0.5;
 Hardware::Hardware() : servoController(nullptr) {
     i2c::softwareReset();
     wiringPiSetup();
+    gpioInitialise();
 
     servoController.reset(new ServoController());
 
