@@ -38,7 +38,6 @@ namespace {
     }
 
     void buttonPressL_(int event, int level, uint32_t tick, void* userdata) {
-        std::cout << "Button L pressed" << std::endl;
         Hardware* hw = reinterpret_cast<Hardware*>(userdata);
         if (level != RISING_EDGE) return;
         hw->buttonPressL();
@@ -130,9 +129,7 @@ double Hardware::getTemperature() {
 
 void Hardware::buttonPressL() {
     bool EXPECTED = false;
-    if (buttonL.compare_exchange_strong(EXPECTED, true)) {
-        std::cout << "Button L pressed" << std::endl;
-    }
+    buttonL.compare_exchange_strong(EXPECTED, true);
 }
 
 void Hardware::buttonPressR() {
@@ -151,6 +148,6 @@ void Hardware::calibratePan() {
         if (pos > 1) pos = 1;
         pos = (1 + pos) / 2;
         servoController->setServoPosition(PAN_SERVO, PAN_SERVO_PHASE, pos);
-        //if (buttonL.compare_exchange_strong(BUTTON_EXPECTED, false)) break;
+        if (buttonL.compare_exchange_strong(BUTTON_EXPECTED, false)) break;
     }
 }
