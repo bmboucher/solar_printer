@@ -37,7 +37,6 @@ namespace {
         adcPotInput = newValue;
     }
 
-    constexpr int RISING_EDGE = 1;
     void buttonPressL_(int event, int level, uint32_t tick, void* userdata) {
         Hardware* hw = reinterpret_cast<Hardware*>(userdata);
         if (level != RISING_EDGE) return;
@@ -59,7 +58,7 @@ Hardware::Hardware() : servoController(nullptr) {
 
     gpioSetMode(LED_PIN, PI_OUTPUT);
     gpioSetMode(L_BUTTON_PIN, PI_INPUT);
-    gpioSetMode(R_BUTTON_BIN, PI_INPUT);
+    gpioSetMode(R_BUTTON_PIN, PI_INPUT);
     gpioSetAlertFuncEx(L_BUTTON_PIN, &buttonPressL_, this);
     gpioSetAlertFuncEx(R_BUTTON_PIN, &buttonPressR_, this);
 
@@ -129,16 +128,19 @@ double Hardware::getTemperature() {
 }
 
 void Hardware::buttonPressL() {
-    buttonL.compare_exchange_strong(false, true);
+    bool EXPECTED = false;
+    buttonL.compare_exchange_strong(EXPECTED, true);
 }
 
 void Hardware::buttonPressR() {
-    buttonR.compare_exchange_strong(false, true);
+    bool EXPECTED = false;
+    buttonR.compare_exchange_strong(EXPECTED, true);
 }
 
 void Hardware::calibratePan() {
     switchAdcInput(adc, adcPotInput, true);
     setMirrorTilt(90);
+    bool BUTTON_EXPECTED = true;
     while (true) {
         double potV = getPotentiometerVoltage();
         double pos = potV / POT_V_RANGE;
@@ -146,6 +148,6 @@ void Hardware::calibratePan() {
         if (pos > 1) pos = 1;
         pos = (1 + pos) / 2;
         servoController->setServoPosition(PAN_SERVO, PAN_SERVO_PHASE, pos);
-        if (buttonL.compare_exchange_strong(true, false)) break;
+        if (buttonL.compare_exchange_strong(BUTTON_EXPECTED, false)) break;
     }
 }
