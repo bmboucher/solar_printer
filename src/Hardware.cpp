@@ -10,7 +10,7 @@
 
 constexpr unsigned char PAN_SERVO = 0;
 constexpr double PAN_SERVO_PHASE = 0;
-constexpr unsigned char TILT_SERVO = 1;
+constexpr unsigned char TILT_SERVO = 15;
 constexpr double TILT_SERVO_PHASE = 0.5;
 
 Hardware::Hardware() : servoController(nullptr) {
