@@ -13,7 +13,7 @@ void ServoController::init() {
     setPWMFreq(SERVO_PWM_FREQ);
     setAllPWMConstant(false);
     start();
-    setAutoOff(AUTO_OFF_MS);
+    //setAutoOff(AUTO_OFF_MS);
 }
 
 void ServoController::setPulseWidth
