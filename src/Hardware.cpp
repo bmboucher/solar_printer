@@ -38,6 +38,7 @@ namespace {
     }
 
     void buttonPressL_(int event, int level, uint32_t tick, void* userdata) {
+        std::cout << "Button L pressed" << std::endl;
         Hardware* hw = reinterpret_cast<Hardware*>(userdata);
         if (level != RISING_EDGE) return;
         hw->buttonPressL();
