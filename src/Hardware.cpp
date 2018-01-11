@@ -244,7 +244,8 @@ void Hardware::figureEight() {
     double x = -a;
     buttonL.store(false);
     while (true) {
-        y = y_sign * sqr((pow(x, 2) - pow(x, 4) / pow(a, 2)) / b);
+        const double y 
+            = y_sign * sqrt((pow(x, 2) - pow(x, 4) / pow(a, 2)) / b);
         setMirrorPan(x);
         setMirrorTilt(y + y_offset);
         std::this_thread::sleep_for(t_step);
