@@ -29,7 +29,8 @@ void setMirrorPositionManually(Hardware& hw) {
 int main(int argc, char* argv[]) {   
     //i2c::setLogging(true);
     Hardware hw;
-
+    hw.calibratePan();
+    /*
     while (true) {
         getchar();
         double voltage = hw.getVoltage();
@@ -38,6 +39,7 @@ int main(int argc, char* argv[]) {
         getchar();
         setMirrorPositionManually(hw);
     }
+    */
     /*
     double pan = -90;
     double inc = 0.5;
