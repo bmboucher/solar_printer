@@ -140,7 +140,6 @@ void Hardware::buttonPressR() {
 void Hardware::calibratePan() {
     switchAdcInput(adc, adcPotInput, true);
     setMirrorTilt(90);
-    bool BUTTON_EXPECTED = true;
     buttonL.store(false);
     while (true) {
         double potV = getPotentiometerVoltage();
@@ -149,6 +148,7 @@ void Hardware::calibratePan() {
         if (pos > 1) pos = 1;
         pos = (1 + pos) / 2;
         servoController->setServoPosition(PAN_SERVO, PAN_SERVO_PHASE, pos);
+        bool BUTTON_EXPECTED{ true };
         if (buttonL.compare_exchange_strong(BUTTON_EXPECTED, false)) break;
     }
     setMirrorPan(0);
