@@ -411,6 +411,6 @@ double PCA9685::getDutyCycle(unsigned char index) const {
 
 double PCA9685::getPulseWidth(unsigned char index) const {
     const double pwm_ms = 1000.0 / pwm_freq;
-    const double duty_cycle = getPulseWidth(index);
+    const double duty_cycle = getDutyCycle(index);
     return duty_cycle * pwm_ms;
 }

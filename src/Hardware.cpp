@@ -164,7 +164,7 @@ void Hardware::calibratePan() {
             servoController->setServoPosition(PAN_SERVO, PAN_SERVO_PHASE, pos);
             bool BUTTON_EXPECTED{ true };
             if (buttonL.compare_exchange_weak(BUTTON_EXPECTED, false)) {
-                double position = 0; // servoController->getServoPosition(PAN_SERVO);
+                double position = servoController->getServoPosition(PAN_SERVO);
                 std::cout << "Position = " << position << std::endl;
                 return position;
             }
