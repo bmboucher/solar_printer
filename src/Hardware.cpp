@@ -260,9 +260,8 @@ void Hardware::figureEight() {
                   << x << '\t' << y << std::endl;
 
         x += x_step;
-        if (x + x_step > a || x + x_step < -a) 
-            { x_step *= -1; y_sign *= -1; }
-        if (x == 0 || x * (x + x_step) < 0) { y_sign *= -1; }
+        if (x + x_step > a || x + x_step < -a) x_step *= -1;
+        y_sign = (x * x_step > 0) ? 1 : -1;
 
         bool BUTTON_EXPECTED{ true };
         if (buttonL.compare_exchange_weak(BUTTON_EXPECTED, false)) return;
