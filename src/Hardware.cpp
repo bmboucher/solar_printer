@@ -10,6 +10,7 @@
 #include <thread>
 #include <chrono>
 #include <cmath>
+#include <iomanip>
 
 namespace {
     constexpr unsigned char PAN_SERVO = 0;
@@ -243,7 +244,7 @@ void Hardware::figureEight() {
     const double a = FIGURE_EIGHT_PAN;
     const double b = pow(a / (2 * y_semimajor), 2);
 
-    const std::chrono::duration<size_t, std::milli> t_step(10);
+    const std::chrono::duration<size_t, std::milli> t_step(20);
     double x_step = 1;
     double y_sign = 1;
     double x = -a;
@@ -254,6 +255,9 @@ void Hardware::figureEight() {
         setMirrorPan(x);
         setMirrorTilt(y + y_offset);
         std::this_thread::sleep_for(t_step);
+
+        std::cout << std::setw(10) << std::setprecision(6)
+                  << x << '\t' << y << std::endl;
 
         x += x_step;
         if (x + x_step > a || x + x_step < -a) 
