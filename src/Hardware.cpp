@@ -152,6 +152,7 @@ namespace {
             const uint8_t servo, const double phase,
             std::atomic_bool& buttonL) {
         buttonL.store(false);
+        const std::chrono::duration<size_t, std::milli> PAUSE_TIME(500);
         while (true) {
             double potV = adc->getVoltage();
             double pos = potV / POT_V_RANGE;
@@ -161,6 +162,10 @@ namespace {
             servoController->setServoPosition(servo, phase, pos);
             bool BUTTON_EXPECTED{ true };
             if (buttonL.compare_exchange_weak(BUTTON_EXPECTED, false)) {
+                gpioWrite(LED_PIN, 0);
+                std::this_thread::sleep_for(PAUSE_TIME);
+                gpioWrite(LED_PIN, 1);
+
                 double position = servoController->getServoPosition(servo);
                 std::cout << "Position = " << position << std::endl;
                 return position;
